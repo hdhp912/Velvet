@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, User, Menu, X, Shield, Sparkles } from 'lucide-react';
 import { BrandWordmark } from './BrandWordmark';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 interface SiteHeaderProps {
   currentTab: string;
@@ -20,7 +21,8 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
   onOpenAdmin,
   isAdminActive,
 }) => {
-  const { user, isAuthenticated, openAuthModal } = useAuth();
+  const { user, isAuthenticated, openAuthModal, togglePremiumMembership } = useAuth();
+  const { showToast } = useToast();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -140,11 +142,33 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
             </button>
           )}
 
+          {/* 1-Click VIP Demo Access for Testing */}
+          <button
+            onClick={() => {
+              togglePremiumMembership();
+              showToast(
+                user?.isPremium
+                  ? 'Switched to Free Listener Mode'
+                  : '⭐ Premium VIP Mode Activated! All chapters unlocked.',
+                'success'
+              );
+            }}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
+              user?.isPremium
+                ? 'bg-[#873F55] text-white border-[#873F55] shadow-xs hover:bg-[#6F3044]'
+                : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 shadow-xs'
+            }`}
+            title="Click to toggle between Free Listener and Premium VIP test mode"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-current" />
+            <span>{user?.isPremium ? 'VIP Active (Tap: Free)' : 'Tap for VIP Access'}</span>
+          </button>
+
           {/* Primary Action: Join Premium */}
           {user?.isPremium ? (
             <button
               onClick={() => onNavigate('membership')}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-[#873F55] bg-[#F4E8EC] border border-[#E7E0DA] rounded-lg hover:bg-[#ebd5dc] transition-colors"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-[#873F55] bg-[#F4E8EC] border border-[#E7E0DA] rounded-lg hover:bg-[#ebd5dc] transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#873F55]" />
               <span>Premium Member</span>
@@ -152,7 +176,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           ) : (
             <button
               onClick={() => onNavigate('membership')}
-              className="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#873F55] rounded-lg hover:bg-[#6F3044] transition-colors whitespace-nowrap shadow-xs"
+              className="hidden sm:inline-block px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#873F55] rounded-lg hover:bg-[#6F3044] transition-colors whitespace-nowrap shadow-xs"
             >
               Join Premium
             </button>

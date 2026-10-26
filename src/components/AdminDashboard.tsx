@@ -610,23 +610,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               Daily Automated Publishing Schedule
             </h3>
             <div className="space-y-3 text-xs text-[#746B65]">
-              <div className="p-3 bg-[#FAF8F5] border border-[#E7E0DA] rounded-lg flex items-center justify-between">
+              <div className="p-3.5 bg-[#FAF8F5] border border-[#39745A]/40 rounded-lg flex items-center justify-between">
                 <div>
                   <strong className="text-[#292421] block">
-                    Tomorrow, 06:00 UTC · The Summer We Almost Stayed (Ch 5)
+                    Today, 06:00 UTC · The Summer We Almost Stayed (Ch 5: The Harbor Lanterns at Midnight)
+                  </strong>
+                  <span className="text-[#39745A]">Published & Live for Listeners Now</span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#39745A] text-white">Live Today</span>
+              </div>
+              <div className="p-3.5 bg-[#FAF8F5] border border-[#39745A]/40 rounded-lg flex items-center justify-between">
+                <div>
+                  <strong className="text-[#292421] block">
+                    Today, 06:00 UTC · A Contract Written in Winter (Ch 4: Whispers in the Snow)
+                  </strong>
+                  <span className="text-[#39745A]">Published & Live for Listeners Now</span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#39745A] text-white">Live Today</span>
+              </div>
+              <div className="p-3.5 bg-[#FAF8F5] border border-[#39745A]/40 rounded-lg flex items-center justify-between">
+                <div>
+                  <strong className="text-[#292421] block">
+                    Today, 06:00 UTC · The Things We Never Said (Ch 3: The Forgotten Rose Garden)
+                  </strong>
+                  <span className="text-[#39745A]">Published & Live for Listeners Now</span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#39745A] text-white">Live Today</span>
+              </div>
+              <div className="p-3.5 bg-[#FAF8F5] border border-[#E7E0DA] rounded-lg flex items-center justify-between">
+                <div>
+                  <strong className="text-[#292421] block">
+                    Tomorrow, 06:00 UTC · The Summer We Almost Stayed (Ch 6)
                   </strong>
                   <span>Automated release for Premium listeners</span>
                 </div>
-                <span className="text-[#39745A] font-semibold">Queued</span>
-              </div>
-              <div className="p-3 bg-[#FAF8F5] border border-[#E7E0DA] rounded-lg flex items-center justify-between">
-                <div>
-                  <strong className="text-[#292421] block">
-                    Tuesday, 06:00 UTC · A Contract Written in Winter (Ch 4)
-                  </strong>
-                  <span>Voice synthesis completed · Awaiting release window</span>
-                </div>
-                <span className="text-[#39745A] font-semibold">Queued</span>
+                <span className="text-[#9A6B2F] font-semibold">Queued</span>
               </div>
             </div>
           </div>

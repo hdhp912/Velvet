@@ -21,6 +21,7 @@ interface HomeViewProps {
   onSelectStory: (id: string) => void;
   onNavigateTab: (tab: string, param?: string) => void;
   onNavigateMembership: () => void;
+  onReadChapter?: (storyId: string, chapterId: string) => void;
 }
 
 const formatDuration = (totalSeconds: number) => {
@@ -43,9 +44,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onSelectStory,
   onNavigateTab,
   onNavigateMembership,
+  onReadChapter,
 }) => {
   const { playChapter, continueListening, currentStory, currentChapter, isPlaying } = useAudio();
-  const { user } = useAuth();
+  const { user, togglePremiumMembership } = useAuth();
   const { showToast } = useToast();
 
   const featuredStory = stories.find((s) => s.isFeatured) || stories[0];
@@ -62,8 +64,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     if (!story) return;
 
     if (recent.isPremium && !user?.isPremium) {
-      showToast('Unlock this chapter with Velvet Stories Premium', 'info');
-      onNavigateMembership();
+      togglePremiumMembership();
+      showToast('⭐ Premium VIP Mode Activated: Playing ' + recent.chapterTitle, 'success');
+      const chapter = story.chapters.find((c) => c.number === recent.chapterNumber) || story.chapters[0];
+      playChapter(story, chapter);
       return;
     }
 
@@ -225,20 +229,34 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 <span>{formatDuration(featuredStory.totalDurationSeconds)} total audio</span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <button
-                  onClick={() => playChapter(featuredStory, featuredStory.chapters[0])}
+                  onClick={() => {
+                    if (onReadChapter) {
+                      onReadChapter(featuredStory.id, featuredStory.chapters[0].id);
+                    } else {
+                      onSelectStory(featuredStory.id);
+                    }
+                  }}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#873F55] text-white text-xs sm:text-sm font-semibold rounded-lg hover:bg-[#6F3044] transition-colors shadow-xs"
                 >
-                  <Play className="w-4 h-4 fill-current" />
+                  <BookOpen className="w-4 h-4" />
+                  <span>Read Chapter 1</span>
+                </button>
+
+                <button
+                  onClick={() => playChapter(featuredStory, featuredStory.chapters[0])}
+                  className="inline-flex items-center gap-2 px-5 py-3 bg-white border border-[#D6CCC4] text-[#292421] hover:border-[#873F55] hover:text-[#873F55] text-xs sm:text-sm font-semibold rounded-lg transition-colors shadow-2xs"
+                >
+                  <Play className="w-4 h-4 fill-current ml-0.5 text-[#873F55]" />
                   <span>Listen to preview</span>
                 </button>
 
                 <button
                   onClick={() => onSelectStory(featuredStory.id)}
-                  className="text-xs sm:text-sm font-semibold text-[#292421] hover:text-[#873F55] transition-colors px-2 py-2"
+                  className="text-xs sm:text-sm font-semibold text-[#746B65] hover:text-[#292421] transition-colors px-2 py-2"
                 >
-                  View story details →
+                  View series details →
                 </button>
               </div>
             </div>
@@ -297,8 +315,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
           {RECENT_CHAPTERS.map((recent, idx) => (
             <div
               key={`${recent.storyId}-${recent.chapterNumber}-${idx}`}
-              onClick={() => handlePlayRecentChapter(recent)}
-              className="p-3.5 sm:px-5 sm:py-3.5 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#FAF8F5] transition-colors"
+              onClick={() => {
+                const story = stories.find((s) => s.id === recent.storyId);
+                const chapter =
+                  story?.chapters.find((c) => c.number === recent.chapterNumber) ||
+                  story?.chapters[0];
+                if (story && chapter && onReadChapter) {
+                  onReadChapter(story.id, chapter.id);
+                } else {
+                  onSelectStory(recent.storyId);
+                }
+              }}
+              className="p-3.5 sm:px-5 sm:py-3.5 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#FAF8F5] transition-colors group"
+              title="Click to read chapter text"
             >
               <div className="flex items-center gap-3.5 min-w-0">
                 <img
@@ -311,13 +340,18 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     <span className="text-xs font-semibold text-[#873F55]">
                       Chapter {recent.chapterNumber}
                     </span>
+                    {recent.publishedAt.includes('Today') && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-[#873F55] text-white px-2 py-0.5 rounded-[4px] shadow-xs">
+                        New Today
+                      </span>
+                    )}
                     {recent.isPremium && (
-                      <span className="text-[10px] text-[#746B65] bg-[#F2EEEA] px-1.5 py-0.2 rounded-[4px]">
+                      <span className="text-[10px] text-[#746B65] bg-[#F2EEEA] px-1.5 py-0.5 rounded-[4px]">
                         Premium
                       </span>
                     )}
                   </div>
-                  <h4 className="font-editorial text-sm sm:text-base text-[#292421] truncate mt-0.5">
+                  <h4 className="font-editorial text-sm sm:text-base text-[#292421] group-hover:text-[#873F55] transition-colors truncate mt-0.5">
                     {recent.chapterTitle}
                   </h4>
                   <p className="text-xs text-[#746B65] truncate">
@@ -326,19 +360,28 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-[#746B65] shrink-0 tabular-nums">
+              <div className="flex items-center gap-3 sm:gap-4 text-xs text-[#746B65] shrink-0 tabular-nums">
                 <span className="hidden sm:inline text-[#948982]">{recent.publishedAt}</span>
                 <span className="font-medium text-[#292421] flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-[#948982]" />
                   <span>{formatTime(recent.durationSeconds)}</span>
                 </span>
+
+                {/* Read Badge */}
+                <div className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white text-[#292421] font-medium text-xs border border-[#E7E0DA] transition-colors">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Read</span>
+                </div>
+
+                {/* Dedicated Audio Play Button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePlayRecentChapter(recent);
                   }}
-                  className="w-8 h-8 rounded-full bg-[#FAF8F5] hover:bg-[#873F55] hover:text-white flex items-center justify-center text-[#292421] transition-colors"
-                  aria-label="Play chapter"
+                  className="w-8 h-8 rounded-full bg-[#FAF8F5] hover:bg-[#873F55] hover:text-white flex items-center justify-center text-[#292421] transition-colors shadow-2xs"
+                  aria-label="Listen to audio narration"
+                  title="Listen to audio narration"
                 >
                   <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                 </button>

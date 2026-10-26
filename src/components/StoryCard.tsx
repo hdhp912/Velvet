@@ -62,6 +62,14 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect }) => {
             100 Chapters
           </div>
         )}
+
+        {/* New chapter updated today badge */}
+        {story.chapters?.some((c) => c.publishedAt?.includes('Today')) && (
+          <div className="absolute top-2.5 right-2.5 bg-[#873F55] text-white text-[10px] font-semibold px-2 py-0.5 rounded-[5px] shadow-sm flex items-center gap-1">
+            <Sparkles className="w-2.5 h-2.5" />
+            New Today
+          </div>
+        )}
       </div>
 
       {/* Card Content & Metadata */}

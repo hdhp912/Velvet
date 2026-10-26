@@ -14,14 +14,16 @@ import { AudioPlayer } from './components/AudioPlayer';
 import { ListeningView } from './components/ListeningView';
 import { AuthModal } from './components/AuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
+import { ChapterReaderView } from './components/ChapterReaderView';
 
 function MainApp() {
   const { isExpanded } = useAudio();
 
   const [currentTab, setCurrentTab] = useState<
-    'home' | 'discover' | 'romance' | 'new-releases' | 'completed' | 'detail' | 'membership' | 'account'
+    'home' | 'discover' | 'romance' | 'new-releases' | 'completed' | 'detail' | 'reader' | 'membership' | 'account'
   >('home');
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [moodFilter, setMoodFilter] = useState('');
   const [isAdminActive, setIsAdminActive] = useState(false);
@@ -29,11 +31,18 @@ function MainApp() {
   // Scroll to top on navigation change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentTab, selectedStoryId, isAdminActive]);
+  }, [currentTab, selectedStoryId, selectedChapterId, isAdminActive]);
 
   const handleSelectStory = (id: string) => {
     setSelectedStoryId(id);
+    setSelectedChapterId(null);
     setCurrentTab('detail');
+  };
+
+  const handleReadChapter = (storyId: string, chapterId: string) => {
+    setSelectedStoryId(storyId);
+    setSelectedChapterId(chapterId);
+    setCurrentTab('reader');
   };
 
   const handleNavigate = (tab: string, param?: string) => {
@@ -54,12 +63,15 @@ function MainApp() {
       if (param) setMoodFilter(param);
     }
 
-    if (tab !== 'detail') {
+    if (tab !== 'detail' && tab !== 'reader') {
       setSelectedStoryId(null);
+      setSelectedChapterId(null);
     }
   };
 
   const selectedStory = SAMPLE_STORIES.find((s) => s.id === selectedStoryId) || SAMPLE_STORIES[0];
+  const selectedChapter =
+    selectedStory.chapters.find((c) => c.id === selectedChapterId) || selectedStory.chapters[0];
 
   if (isAdminActive) {
     return (
@@ -91,6 +103,7 @@ function MainApp() {
             onSelectStory={handleSelectStory}
             onNavigateTab={handleNavigate}
             onNavigateMembership={() => setCurrentTab('membership')}
+            onReadChapter={handleReadChapter}
           />
         )}
 
@@ -111,6 +124,17 @@ function MainApp() {
             story={selectedStory}
             onBack={() => setCurrentTab('home')}
             onNavigateMembership={() => setCurrentTab('membership')}
+            onReadChapter={(chapter) => handleReadChapter(selectedStory.id, chapter.id)}
+          />
+        )}
+
+        {currentTab === 'reader' && selectedStory && selectedChapter && (
+          <ChapterReaderView
+            story={selectedStory}
+            chapter={selectedChapter}
+            onBackToStory={() => setCurrentTab('detail')}
+            onSelectChapter={(chapId) => setSelectedChapterId(chapId)}
+            onNavigateMembership={() => setCurrentTab('membership')}
           />
         )}
 
@@ -122,6 +146,7 @@ function MainApp() {
           <AccountView
             onSelectStory={handleSelectStory}
             onNavigateMembership={() => setCurrentTab('membership')}
+            onReadChapter={handleReadChapter}
           />
         )}
       </main>

@@ -8,6 +8,7 @@ import {
   LogOut,
   ShieldCheck,
   CheckCircle2,
+  BookOpen,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAudio } from '../context/AudioContext';
@@ -17,6 +18,7 @@ import { useToast } from '../context/ToastContext';
 interface AccountViewProps {
   onSelectStory: (id: string) => void;
   onNavigateMembership: () => void;
+  onReadChapter?: (storyId: string, chapterId: string) => void;
 }
 
 const formatTime = (seconds: number) => {
@@ -28,6 +30,7 @@ const formatTime = (seconds: number) => {
 export const AccountView: React.FC<AccountViewProps> = ({
   onSelectStory,
   onNavigateMembership,
+  onReadChapter,
 }) => {
   const { user, signOut, togglePremiumMembership } = useAuth();
   const { continueListening } = useAudio();
@@ -224,13 +227,23 @@ export const AccountView: React.FC<AccountViewProps> = ({
                     <div className="h-full bg-[#873F55]" style={{ width: `${progress}%` }} />
                   </div>
 
-                  <button
-                    onClick={() => continueListening(story.id)}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#873F55] hover:text-[#6F3044]"
-                  >
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Resume Chapter</span>
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => continueListening(story.id)}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#873F55] hover:text-[#6F3044]"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>Resume Audio</span>
+                    </button>
+
+                    <button
+                      onClick={() => onReadChapter?.(story.id, item.chapterId)}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#746B65] hover:text-[#292421]"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Read Text</span>
+                    </button>
+                  </div>
                 </div>
               );
             })}

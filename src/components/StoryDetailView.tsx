@@ -19,6 +19,7 @@ interface StoryDetailViewProps {
   story: Story;
   onBack: () => void;
   onNavigateMembership: () => void;
+  onReadChapter: (chapter: Chapter) => void;
 }
 
 const formatDuration = (totalSeconds: number) => {
@@ -40,9 +41,10 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
   story,
   onBack,
   onNavigateMembership,
+  onReadChapter,
 }) => {
   const { playChapter, currentStory, currentChapter, isPlaying, togglePlay } = useAudio();
-  const { user, toggleFavorite } = useAuth();
+  const { user, toggleFavorite, togglePremiumMembership } = useAuth();
   const { showToast } = useToast();
 
   const [imageError, setImageError] = useState(false);
@@ -51,8 +53,9 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
 
   const handlePlayChapter = (chapter: Chapter) => {
     if (chapter.isPremium && !user?.isPremium) {
-      showToast('Unlock this chapter with Velvet Stories Premium', 'info');
-      onNavigateMembership();
+      togglePremiumMembership();
+      showToast('⭐ Premium VIP Mode Activated: Playing Chapter ' + chapter.number, 'success');
+      playChapter(story, chapter);
       return;
     }
 
@@ -149,16 +152,31 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
             Written by <span className="text-[#292421] font-medium">{story.author}</span> · Velvet Original Audio Production
           </p>
 
-          {/* Action Row */}
+          {/* Action Row: Read Chapter text as primary, Listen audio as dedicated secondary */}
           <div className="flex flex-wrap items-center gap-3 mb-8">
             <button
-              onClick={() => handlePlayChapter(story.chapters[0])}
+              onClick={() => onReadChapter(story.chapters[0])}
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#873F55] text-white text-sm font-semibold rounded-lg hover:bg-[#6F3044] transition-colors shadow-xs"
             >
-              <Play className="w-4 h-4 fill-current" />
-              <span>
-                {currentStory?.id === story.id && isPlaying ? 'Pause Story' : 'Play First Chapter'}
-              </span>
+              <BookOpen className="w-4 h-4" />
+              <span>Read Chapter 1</span>
+            </button>
+
+            <button
+              onClick={() => handlePlayChapter(story.chapters[0])}
+              className="inline-flex items-center gap-2 px-5 py-3 bg-white border border-[#D6CCC4] text-[#292421] hover:border-[#873F55] hover:text-[#873F55] text-sm font-semibold rounded-lg transition-colors shadow-2xs"
+            >
+              {currentStory?.id === story.id && isPlaying ? (
+                <>
+                  <Pause className="w-4 h-4 fill-current text-[#873F55]" />
+                  <span>Pause Audio</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 fill-current ml-0.5 text-[#873F55]" />
+                  <span>Listen to Audio</span>
+                </>
+              )}
             </button>
 
             <button
@@ -194,7 +212,7 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
 
           {/* Premium banner if free user */}
           {!user?.isPremium && (
-            <div className="p-4 bg-[#F2EEEA] border border-[#E7E0DA] rounded-[10px] flex items-center justify-between gap-4 mb-8">
+            <div className="p-4 bg-[#F2EEEA] border border-[#E7E0DA] rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3">
                 <Sparkles className="w-5 h-5 text-[#873F55] shrink-0" />
                 <div className="text-xs">
@@ -202,16 +220,27 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                     Free preview active
                   </span>
                   <span className="text-[#746B65]">
-                    First 2 chapters are free. Upgrade to Premium to listen to the entire serialized saga.
+                    First 2 chapters are free. Tap below to unlock instant VIP Demo access or view full membership plans.
                   </span>
                 </div>
               </div>
-              <button
-                onClick={onNavigateMembership}
-                className="px-3 py-1.5 bg-[#873F55] text-white text-xs font-medium rounded-md hover:bg-[#6F3044] transition-colors shrink-0 whitespace-nowrap"
-              >
-                Join Premium
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => {
+                    togglePremiumMembership();
+                    showToast('⭐ Premium VIP Mode Activated! All chapters unlocked.', 'success');
+                  }}
+                  className="px-3.5 py-1.5 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors shadow-xs whitespace-nowrap"
+                >
+                  ⭐ Unlock VIP Demo
+                </button>
+                <button
+                  onClick={onNavigateMembership}
+                  className="px-3.5 py-1.5 bg-[#873F55] text-white text-xs font-medium rounded-md hover:bg-[#6F3044] transition-colors whitespace-nowrap"
+                >
+                  Membership Plans
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -219,11 +248,11 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
 
       {/* Chapters Section */}
       <div className="border-t border-[#E7E0DA] pt-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
           <div>
             <h2 className="font-editorial text-2xl text-[#292421]">Chapters</h2>
             <p className="text-xs text-[#746B65] mt-0.5">
-              New serialized chapters published regularly
+              Click any chapter to read the text. Tap the play button to listen to voice narration.
             </p>
           </div>
           <span className="text-xs text-[#948982]">
@@ -243,19 +272,21 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
             return (
               <div
                 key={chapter.id}
-                onClick={() => handlePlayChapter(chapter)}
-                className={`p-4 sm:px-6 sm:py-4 flex items-center justify-between gap-4 cursor-pointer transition-colors ${
-                  isCurrent ? 'bg-[#F4E8EC]' : 'hover:bg-[#FAF8F5]'
+                onClick={() => onReadChapter(chapter)}
+                className={`p-4 sm:px-6 sm:py-4 flex items-center justify-between gap-4 cursor-pointer transition-colors group ${
+                  isCurrent ? 'bg-[#F4E8EC]/80' : 'hover:bg-[#FAF8F5]'
                 }`}
+                title="Click to open and read chapter text"
               >
                 <div className="flex items-center gap-4 min-w-0">
-                  {/* Play / Lock Icon */}
+                  {/* Dedicated Audio Play / Pause Button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handlePlayChapter(chapter);
                     }}
-                    className={`w-9 h-9 rounded-full shrink-0 flex items-center justify-center transition-transform ${
+                    title={isPlayingThis ? 'Pause narration' : 'Listen to audio narration'}
+                    className={`w-9 h-9 rounded-full shrink-0 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-2xs ${
                       isCurrent
                         ? 'bg-[#873F55] text-white'
                         : isLocked
@@ -277,13 +308,18 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                       <span className="text-xs font-semibold text-[#873F55]">
                         Chapter {chapter.number}
                       </span>
+                      {chapter.publishedAt.includes('Today') && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-[#873F55] text-white px-2 py-0.5 rounded-[4px] shadow-xs">
+                          New Today
+                        </span>
+                      )}
                       {chapter.isPremium && (
                         <span className="text-[10px] text-[#746B65] bg-[#F2EEEA] px-1.5 py-0.5 rounded-[4px] font-medium">
-                          Premium
+                          {user?.isPremium ? 'VIP Unlocked' : 'Premium'}
                         </span>
                       )}
                     </div>
-                    <h4 className="font-editorial text-base sm:text-lg text-[#292421] truncate mt-0.5">
+                    <h4 className="font-editorial text-base sm:text-lg text-[#292421] group-hover:text-[#873F55] transition-colors truncate mt-0.5">
                       {chapter.title}
                     </h4>
                     {chapter.synopsis && (
@@ -294,11 +330,17 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs text-[#746B65] shrink-0 tabular-nums">
+                <div className="flex items-center gap-3 sm:gap-4 text-xs text-[#746B65] shrink-0 tabular-nums">
                   <span className="hidden sm:inline text-[#948982]">{chapter.publishedAt}</span>
                   <div className="flex items-center gap-1 font-medium text-[#292421]">
                     <Clock className="w-3.5 h-3.5 text-[#948982]" />
                     <span>{formatTime(chapter.durationSeconds)}</span>
+                  </div>
+
+                  {/* Visual Read Text Indicator / Button */}
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white text-[#292421] font-semibold text-xs border border-[#E7E0DA] transition-colors shadow-2xs">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Read</span>
                   </div>
                 </div>
               </div>

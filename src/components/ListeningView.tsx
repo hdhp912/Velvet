@@ -4,6 +4,8 @@ import {
   Pause,
   SkipBack,
   SkipForward,
+  RotateCcw,
+  RotateCw,
   ChevronDown,
   BookOpen,
   Headphones,
@@ -34,6 +36,8 @@ export const ListeningView: React.FC = () => {
     playbackRate,
     togglePlay,
     seek,
+    skipForward,
+    skipBackward,
     setSpeed,
     nextChapter,
     prevChapter,
@@ -154,11 +158,23 @@ export const ListeningView: React.FC = () => {
             </div>
 
             {/* Prose Reader Text */}
-            <div className="prose max-w-none text-[#292421] font-serif leading-[1.8] text-[17px] sm:text-[18px] space-y-5">
-              <p className="first-letter:text-4xl first-letter:font-editorial first-letter:text-[#873F55] first-letter:mr-1.5 first-letter:float-left">
-                {currentChapter.proseExcerpt}
-              </p>
-              <p className="text-[#746B65] italic text-[15px] pt-4 border-t border-[#F2EEEA]">
+            <div className="prose max-w-none text-[#292421] font-serif leading-[1.8] text-[17px] sm:text-[18px] space-y-4">
+              {currentChapter.proseExcerpt
+                .split('\n\n')
+                .filter((p) => p.trim().length > 0)
+                .map((para, idx) => (
+                  <p
+                    key={idx}
+                    className={
+                      idx === 0
+                        ? 'first-letter:text-4xl first-letter:font-editorial first-letter:text-[#873F55] first-letter:mr-1.5 first-letter:float-left'
+                        : ''
+                    }
+                  >
+                    {para}
+                  </p>
+                ))}
+              <p className="text-[#746B65] italic text-[14px] pt-4 border-t border-[#F2EEEA]">
                 Full chapter audio is streaming live above. Listen to hear subtle vocal inflection and original pacing.
               </p>
             </div>
@@ -197,41 +213,51 @@ export const ListeningView: React.FC = () => {
 
         {/* Persistent Scrubber in Listening View */}
         <div className="w-full max-w-[560px] mx-auto mb-6">
-          <div className="relative h-2 bg-[#E7E0DA] rounded-full overflow-hidden flex items-center cursor-pointer mb-2">
+          <div className="relative py-2 flex items-center">
             <input
               type="range"
               min={0}
               max={duration || 100}
+              step="1"
               value={currentTime}
               onChange={(e) => seek(Number(e.target.value))}
+              onInput={(e) => seek(Number((e.target as HTMLInputElement).value))}
               aria-label="Seek track"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-            />
-            <div
-              className="h-full bg-[#873F55] rounded-full transition-all duration-100"
-              style={{ width: `${progressPercentage}%` }}
+              className="w-full h-2 bg-[#E7E0DA] rounded-full accent-[#873F55] cursor-pointer"
             />
           </div>
-          <div className="flex justify-between text-xs text-[#746B65] tabular-nums">
+          <div className="flex justify-between text-xs text-[#746B65] tabular-nums font-mono">
             <span>{formatTime(currentTime)}</span>
             <span>-{formatTime(remainingTime)}</span>
           </div>
         </div>
 
-        {/* Large Playback Controls */}
-        <div className="flex items-center justify-center gap-6 sm:gap-8 mb-6">
+        {/* Large Playback Controls with +/- 15s Skips */}
+        <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6">
+          {/* Previous Chapter */}
           <button
             onClick={prevChapter}
             className="p-3 text-[#746B65] hover:text-[#292421] hover:bg-[#F2EEEA] rounded-full transition-colors"
             title="Previous chapter"
           >
-            <SkipBack className="w-6 h-6" />
+            <SkipBack className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
+          {/* Jump Backward 15s */}
+          <button
+            onClick={() => skipBackward(15)}
+            className="p-3 text-[#746B65] hover:text-[#292421] hover:bg-[#F2EEEA] rounded-full transition-colors relative"
+            title="Rewind 15 seconds"
+          >
+            <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />
+            <span className="text-[10px] font-bold font-mono absolute -bottom-1 left-1/2 -translate-x-1/2 text-[#873F55]">15</span>
+          </button>
+
+          {/* Play / Pause Main Button */}
           <button
             onClick={togglePlay}
             aria-label={isPlaying ? 'Pause narration' : 'Play narration'}
-            className="w-16 h-16 rounded-full bg-[#873F55] text-white flex items-center justify-center shadow-lg hover:bg-[#6F3044] transition-all transform hover:scale-105 active:scale-95"
+            className="w-16 h-16 rounded-full bg-[#873F55] text-white flex items-center justify-center shadow-lg hover:bg-[#6F3044] transition-all transform hover:scale-105 active:scale-95 mx-2"
           >
             {isPlaying ? (
               <Pause className="w-7 h-7 fill-current" />
@@ -240,12 +266,23 @@ export const ListeningView: React.FC = () => {
             )}
           </button>
 
+          {/* Jump Forward 15s */}
+          <button
+            onClick={() => skipForward(15)}
+            className="p-3 text-[#746B65] hover:text-[#292421] hover:bg-[#F2EEEA] rounded-full transition-colors relative"
+            title="Forward 15 seconds"
+          >
+            <RotateCw className="w-5 h-5 sm:w-6 sm:h-6" />
+            <span className="text-[10px] font-bold font-mono absolute -bottom-1 left-1/2 -translate-x-1/2 text-[#873F55]">15</span>
+          </button>
+
+          {/* Next Chapter */}
           <button
             onClick={nextChapter}
             className="p-3 text-[#746B65] hover:text-[#292421] hover:bg-[#F2EEEA] rounded-full transition-colors"
             title="Next chapter"
           >
-            <SkipForward className="w-6 h-6" />
+            <SkipForward className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 

@@ -18,6 +18,8 @@ interface AudioContextType {
   pause: () => void;
   resume: () => void;
   seek: (seconds: number) => void;
+  skipForward: (seconds?: number) => void;
+  skipBackward: (seconds?: number) => void;
   setSpeed: (rate: number) => void;
   setAudioVolume: (volume: number) => void;
   toggleMute: () => void;
@@ -42,20 +44,23 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [readingMode, setReadingMode] = useState<boolean>(false);
 
-  // References for Web Speech API and Web Audio API
+  // References
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<number | null>(null);
-  const ambientAudioCtx = useRef<AudioContext | null>(null);
-  const ambientGain = useRef<GainNode | null>(null);
+  
+  // Ambient Soundscape Web Audio API refs
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const masterGainRef = useRef<GainNode | null>(null);
+  const oscNodesRef = useRef<OscillatorNode[]>([]);
 
-  // Initialize Web Speech API
+  // Initialize browser Speech Synthesis & Web Audio context
   useEffect(() => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       synthRef.current = window.speechSynthesis;
     }
 
-    // Load initial story from history if available
+    // Load initial story from history or defaults
     const saved = localStorage.getItem('velvet_last_listening');
     if (saved) {
       try {
@@ -72,38 +77,99 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         console.error('Failed to parse saved state', e);
       }
     } else {
-      // Default initial story for instant exploration
       const initialStory = SAMPLE_STORIES[0];
-      const initialChapter = initialStory.chapters[0];
+      const initialChapter = initialStory.chapters[0]; // Chapter 5 released today
       setCurrentStory(initialStory);
       setCurrentChapter(initialChapter);
       setDuration(initialChapter.durationSeconds);
-      setCurrentTime(142); // 2m 22s progress for realistic "continue" state
+      setCurrentTime(45); // Start with a brief progress for preview
     }
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (synthRef.current) synthRef.current.cancel();
-      if (ambientAudioCtx.current) ambientAudioCtx.current.close();
+      stopAmbientTone();
     };
   }, []);
 
-  // Save progress periodically
-  useEffect(() => {
-    if (currentStory && currentChapter) {
-      localStorage.setItem(
-        'velvet_last_listening',
-        JSON.stringify({
-          storyId: currentStory.id,
-          chapterId: currentChapter.id,
-          chapterNumber: currentChapter.number,
-          progressSeconds: currentTime,
-          totalSeconds: duration,
-          lastListenedAt: new Date().toISOString(),
-        })
-      );
+  // Web Audio Warm Acoustic Drone synthesizer for uninterrupted immersion
+  const startAmbientTone = () => {
+    try {
+      if (typeof window === 'undefined') return;
+      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtxClass) return;
+
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioCtxClass();
+      }
+
+      if (audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume();
+      }
+
+      const ctx = audioCtxRef.current;
+      stopAmbientTone(); // clear existing
+
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(isMuted ? 0 : volume * 0.08, ctx.currentTime);
+      masterGain.connect(ctx.destination);
+      masterGainRef.current = masterGain;
+
+      // Warm acoustic romance chords (F - C - A soft warm harmonics)
+      const freqs = [174.61, 220.0, 261.63, 349.23];
+      const oscs: OscillatorNode[] = [];
+
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(450, ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.25 / freqs.length, ctx.currentTime);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start();
+        oscs.push(osc);
+      });
+
+      oscNodesRef.current = oscs;
+    } catch (e) {
+      // AudioContext policy safe catch
+      console.warn('Web Audio ambient note:', e);
     }
-  }, [currentStory, currentChapter, currentTime, duration]);
+  };
+
+  const stopAmbientTone = () => {
+    try {
+      oscNodesRef.current.forEach((osc) => {
+        try {
+          osc.stop();
+          osc.disconnect();
+        } catch (_) {}
+      });
+      oscNodesRef.current = [];
+      if (masterGainRef.current) {
+        masterGainRef.current.disconnect();
+        masterGainRef.current = null;
+      }
+    } catch (_) {}
+  };
+
+  // Sync ambient tone volume
+  useEffect(() => {
+    if (masterGainRef.current && audioCtxRef.current) {
+      const targetGain = isMuted ? 0 : volume * 0.08;
+      masterGainRef.current.gain.setValueAtTime(targetGain, audioCtxRef.current.currentTime);
+    }
+  }, [volume, isMuted]);
 
   // Audio timer ticker
   useEffect(() => {
@@ -113,6 +179,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           if (prev >= duration) {
             setIsPlaying(false);
             if (synthRef.current) synthRef.current.cancel();
+            stopAmbientTone();
             return duration;
           }
           return Math.min(prev + playbackRate, duration);
@@ -129,32 +196,62 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [isPlaying, duration, playbackRate]);
 
-  // Handle Speech Narration
-  const startSpeechNarration = (chapter: Chapter, startFraction: number = 0) => {
+  // Save progress periodically to localStorage
+  useEffect(() => {
+    if (currentStory && currentChapter) {
+      localStorage.setItem(
+        'velvet_last_listening',
+        JSON.stringify({
+          storyId: currentStory.id,
+          chapterId: currentChapter.id,
+          chapterNumber: currentChapter.number,
+          progressSeconds: currentTime,
+          totalSeconds: duration,
+          lastListenedAt: new Date().toISOString(),
+        })
+      );
+    }
+  }, [currentStory, currentChapter, currentTime, duration]);
+
+  // Start Speech Narration from a specific time offset
+  const startSpeechNarrationAtTime = (chapter: Chapter, timeInSeconds: number) => {
     if (!synthRef.current) return;
     synthRef.current.cancel();
 
-    const textToRead = `${chapter.title}. ${chapter.proseExcerpt}`;
+    const fullText = `${chapter.title}. ${chapter.proseExcerpt}`;
+    
+    // Split full text into sentence chunks
+    const sentences = fullText.split(/(?<=[.?!])\s+/);
+    const fraction = duration > 0 ? timeInSeconds / duration : 0;
+    const startIndex = Math.min(Math.floor(fraction * sentences.length), sentences.length - 1);
+    const textToRead = sentences.slice(startIndex).join(' ');
+
+    if (!textToRead.trim()) return;
+
     const utterance = new SpeechSynthesisUtterance(textToRead);
     utteranceRef.current = utterance;
 
     utterance.rate = playbackRate;
     utterance.volume = isMuted ? 0 : volume;
 
-    // Pick a natural English voice if available
+    // Select British or American voice matching narrator
     const voices = synthRef.current.getVoices();
-    const englishVoices = voices.filter((v) => v.lang.startsWith('en'));
-    const preferred = englishVoices.find((v) => v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Serena')) || englishVoices[0];
-    if (preferred) {
-      utterance.voice = preferred;
+    const preferredLang = chapter.storyId.includes('contract') ? 'en-US' : 'en-GB';
+    const matchingVoice =
+      voices.find((v) => v.lang.startsWith(preferredLang) && (v.name.includes('Natural') || v.name.includes('Serena') || v.name.includes('Daniel') || v.name.includes('Oliver'))) ||
+      voices.find((v) => v.lang.startsWith('en')) ||
+      voices[0];
+
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
     }
 
     utterance.onend = () => {
-      // Finished speaking the excerpt
+      // If reached end of utterance before end of chapter duration, let ambient warmth complete
     };
 
     utterance.onerror = (e) => {
-      console.warn('Speech synthesis notice:', e);
+      console.warn('SpeechSynthesis event notice:', e);
     };
 
     try {
@@ -170,7 +267,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setDuration(chapter.durationSeconds);
     setCurrentTime(0);
     setIsPlaying(true);
-    startSpeechNarration(chapter, 0);
+    startAmbientTone();
+    startSpeechNarrationAtTime(chapter, 0);
   };
 
   const togglePlay = () => {
@@ -185,36 +283,39 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const pause = () => {
     setIsPlaying(false);
-    if (synthRef.current && synthRef.current.speaking) {
-      synthRef.current.pause();
+    if (synthRef.current) {
+      synthRef.current.cancel();
     }
+    stopAmbientTone();
   };
 
   const resume = () => {
+    if (!currentChapter) return;
     setIsPlaying(true);
-    if (synthRef.current && synthRef.current.paused) {
-      synthRef.current.resume();
-    } else if (currentChapter) {
-      startSpeechNarration(currentChapter);
-    }
+    startAmbientTone();
+    startSpeechNarrationAtTime(currentChapter, currentTime);
   };
 
   const seek = (seconds: number) => {
     const clamped = Math.max(0, Math.min(seconds, duration));
     setCurrentTime(clamped);
-    if (synthRef.current) {
-      synthRef.current.cancel();
-      if (isPlaying && currentChapter) {
-        startSpeechNarration(currentChapter);
-      }
+    if (isPlaying && currentChapter) {
+      startSpeechNarrationAtTime(currentChapter, clamped);
     }
+  };
+
+  const skipForward = (seconds: number = 15) => {
+    seek(currentTime + seconds);
+  };
+
+  const skipBackward = (seconds: number = 15) => {
+    seek(currentTime - seconds);
   };
 
   const setSpeed = (rate: number) => {
     setPlaybackRate(rate);
-    if (synthRef.current && utteranceRef.current && isPlaying) {
-      synthRef.current.cancel();
-      if (currentChapter) startSpeechNarration(currentChapter);
+    if (isPlaying && currentChapter) {
+      startSpeechNarrationAtTime(currentChapter, currentTime);
     }
   };
 
@@ -266,16 +367,17 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           setCurrentStory(story);
           setCurrentChapter(chapter);
           setDuration(chapter.durationSeconds);
-          setCurrentTime(parsed.progressSeconds || 0);
+          const startSecs = parsed.progressSeconds || 0;
+          setCurrentTime(startSecs);
           setIsPlaying(true);
-          startSpeechNarration(chapter);
+          startAmbientTone();
+          startSpeechNarrationAtTime(chapter, startSecs);
           return;
         }
       } catch (e) {
         console.error(e);
       }
     }
-    // Fallback to first chapter
     playChapter(story, story.chapters[0]);
   };
 
@@ -297,6 +399,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         pause,
         resume,
         seek,
+        skipForward,
+        skipBackward,
         setSpeed,
         setAudioVolume,
         toggleMute,
