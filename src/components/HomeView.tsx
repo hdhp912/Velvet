@@ -11,6 +11,7 @@ import {
 import { Story, Chapter } from '../types';
 import { StoryCard } from './StoryCard';
 import { BROWSE_MOODS, RECENT_CHAPTERS } from '../data/sampleStories';
+import { BOOK_COVERS } from '../assets/images';
 import { useAudio } from '../context/AudioContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -114,7 +115,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="group cursor-pointer relative aspect-[3/4] w-full max-w-[360px] rounded-[16px] overflow-hidden shadow-[0_12px_36px_rgba(41,36,33,0.12)] border border-[#E7E0DA] bg-[#F2EEEA]"
             >
               <img
-                src="/src/assets/images/hero_romance_cover_1792949589998.jpg"
+                src={BOOK_COVERS.hero}
                 alt="Velvet Stories Featured Production"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"

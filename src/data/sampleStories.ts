@@ -1,4 +1,5 @@
 import { Story } from '../types';
+import { BOOK_COVERS } from '../assets/images';
 
 export const SAMPLE_STORIES: Story[] = [
   {
@@ -12,7 +13,7 @@ export const SAMPLE_STORIES: Story[] = [
       tone: 'Intimate, warm, evocative',
       gender: 'female',
     },
-    coverImage: '/src/assets/images/cover_summer_stayed_1792949591201.jpg',
+    coverImage: BOOK_COVERS.summerStayed,
     synopsis:
       'Seven summers after walking away from the sun-drenched cliffs of Positano, architect Julian returns to restore an estate—only to discover the woman who kept his letters still lives next door. An aching, slow-burning romance of second chances, coastal salt, and promises never forgotten.',
     genre: 'Slow Burn',
@@ -90,7 +91,7 @@ export const SAMPLE_STORIES: Story[] = [
       tone: 'Deep, measured, commanding yet tender',
       gender: 'male',
     },
-    coverImage: '/src/assets/images/cover_contract_winter_1792949591597.jpg',
+    coverImage: BOOK_COVERS.contractWinter,
     synopsis:
       'To secure her family’s historic publishing imprint, independent editor Gemma agrees to a six-month sham engagement with venture financier Marcus Sterling. But high above a snowbound Manhattan, the boundary between calculated clauses and fierce devotion begins to blur.',
     genre: 'Billionaire',
@@ -155,7 +156,7 @@ export const SAMPLE_STORIES: Story[] = [
       tone: 'Intimate, warm, evocative',
       gender: 'female',
     },
-    coverImage: '/src/assets/images/cover_rosewood_train_1792949592061.jpg',
+    coverImage: BOOK_COVERS.rosewoodTrain,
     synopsis:
       'Stranded on a delayed sleeper train cutting through the misty Oregon pines, botanical researcher Laurel finds herself seated across from Owen—the high school sweetheart who left town without saying goodbye ten years ago. As the engine winds deeper into the mountains, ten years of silence dissolve.',
     genre: 'Second Chance',
@@ -207,7 +208,7 @@ export const SAMPLE_STORIES: Story[] = [
       tone: 'Lyrical, nuanced, emotionally resonant',
       gender: 'female',
     },
-    coverImage: '/src/assets/images/cover_never_said_1792949591953.jpg',
+    coverImage: BOOK_COVERS.neverSaid,
     synopsis:
       'Working late shifts inside London’s Victorian botanical conservatory, archivist Mira and landscape restorer Callum maintain an unspoken covenant: stay colleagues, protect their fragile friendship. But when an uncataloged collection of Edwardian love letters arrives, their quiet restraint begins to crack.',
     genre: 'Friends to Lovers',
@@ -259,7 +260,7 @@ export const SAMPLE_STORIES: Story[] = [
       tone: 'Intimate, warm, evocative',
       gender: 'female',
     },
-    coverImage: '/src/assets/images/hero_romance_cover_1792949589998.jpg',
+    coverImage: BOOK_COVERS.cliffsideVows,
     synopsis:
       'On the windswept headlands of Cornwall, an estranged couple agrees to spend a final fortnight together to settle an ancestral cottage deed. High above crashing waves and heather-covered cliffs, unresolved passion proves stronger than any legal decree.',
     genre: 'Contemporary',
@@ -317,7 +318,7 @@ export const RECENT_CHAPTERS = [
   {
     storyId: 'story-summer-stayed',
     storyTitle: 'The Summer We Almost Stayed',
-    coverImage: '/src/assets/images/cover_summer_stayed_1792949591201.jpg',
+    coverImage: BOOK_COVERS.summerStayed,
     chapterNumber: 4,
     chapterTitle: 'The Blue Hour Promise',
     durationSeconds: 810,
@@ -328,7 +329,7 @@ export const RECENT_CHAPTERS = [
   {
     storyId: 'story-contract-winter',
     storyTitle: 'A Contract Written in Winter',
-    coverImage: '/src/assets/images/cover_contract_winter_1792949591597.jpg',
+    coverImage: BOOK_COVERS.contractWinter,
     chapterNumber: 3,
     chapterTitle: 'A Snowbound Evening',
     durationSeconds: 890,
@@ -339,7 +340,7 @@ export const RECENT_CHAPTERS = [
   {
     storyId: 'story-things-never-said',
     storyTitle: 'The Things We Never Said',
-    coverImage: '/src/assets/images/cover_never_said_1792949591953.jpg',
+    coverImage: BOOK_COVERS.neverSaid,
     chapterNumber: 2,
     chapterTitle: 'Ink and Dried Petals',
     durationSeconds: 850,
@@ -350,7 +351,7 @@ export const RECENT_CHAPTERS = [
   {
     storyId: 'story-summer-stayed',
     storyTitle: 'The Summer We Almost Stayed',
-    coverImage: '/src/assets/images/cover_summer_stayed_1792949591201.jpg',
+    coverImage: BOOK_COVERS.summerStayed,
     chapterNumber: 3,
     chapterTitle: 'Unanswered Correspondence',
     durationSeconds: 920,
@@ -361,7 +362,7 @@ export const RECENT_CHAPTERS = [
   {
     storyId: 'story-rosewood-train',
     storyTitle: 'The Last Train to Rosewood',
-    coverImage: '/src/assets/images/cover_rosewood_train_1792949592061.jpg',
+    coverImage: BOOK_COVERS.rosewoodTrain,
     chapterNumber: 2,
     chapterTitle: 'Miles Through the Pines',
     durationSeconds: 870,

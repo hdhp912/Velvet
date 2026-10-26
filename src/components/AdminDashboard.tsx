@@ -335,6 +335,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                         <img
                           src={story.coverImage}
                           alt={story.title}
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/images/cover_summer_stayed.jpg';
+                          }}
                           className="w-8 h-10 object-cover rounded-[3px]"
                         />
                       </td>

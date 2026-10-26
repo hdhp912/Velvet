@@ -158,6 +158,9 @@ export const AccountView: React.FC<AccountViewProps> = ({
                     <img
                       src={story.coverImage}
                       alt={story.title}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/images/cover_summer_stayed.jpg';
+                      }}
                       className="w-10 h-13 object-cover rounded-[4px] shrink-0"
                     />
                     <div className="min-w-0">

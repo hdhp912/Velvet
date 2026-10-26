@@ -86,6 +86,9 @@ export const AudioPlayer: React.FC = () => {
               <img
                 src={currentStory.coverImage}
                 alt={currentStory.title}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/images/cover_summer_stayed.jpg';
+                }}
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover transition-transform group-hover:scale-105"
               />

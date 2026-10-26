@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Play,
   Pause,
@@ -45,6 +45,8 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
   const { user, toggleFavorite } = useAuth();
   const { showToast } = useToast();
 
+  const [imageError, setImageError] = useState(false);
+
   const isFavorite = user?.favorites.includes(story.id);
 
   const handlePlayChapter = (chapter: Chapter) => {
@@ -82,12 +84,21 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
         {/* Left Column: Large Portrait Cover */}
         <div className="md:col-span-5 lg:col-span-4">
           <div className="relative aspect-[3/4] w-full rounded-[12px] overflow-hidden shadow-[0_12px_36px_rgba(41,36,33,0.10)] border border-[#E7E0DA] bg-[#F2EEEA]">
-            <img
-              src={story.coverImage}
-              alt={story.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
-            />
+            {!imageError ? (
+              <img
+                src={story.coverImage}
+                alt={story.title}
+                onError={() => setImageError(true)}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-[#F2EEEA] text-[#746B65] text-center">
+                <BookOpen className="w-12 h-12 text-[#948982] mb-3" />
+                <span className="font-editorial text-lg text-[#292421]">{story.title}</span>
+                <span className="text-xs text-[#948982] mt-1">{story.author}</span>
+              </div>
+            )}
           </div>
 
           {/* Quick Stats Box */}
