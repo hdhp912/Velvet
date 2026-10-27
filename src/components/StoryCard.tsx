@@ -56,10 +56,14 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect }) => {
           </button>
         </div>
 
-        {/* Status / Series indicator (Clean restrained label) */}
-        {story.totalPlannedChapters >= 100 && (
+        {/* Status / Series indicator */}
+        {story.status === 'Completed' ? (
+          <div className="absolute top-2.5 left-2.5 bg-[#39745A]/90 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-[5px] shadow-xs">
+            Complete · 100% Free
+          </div>
+        ) : (
           <div className="absolute top-2.5 left-2.5 bg-[#292421]/80 backdrop-blur-xs text-[#FFF9F5] text-[10px] font-medium px-2 py-0.5 rounded-[5px]">
-            100 Chapters
+            Ch 1–10 Free
           </div>
         )}
 

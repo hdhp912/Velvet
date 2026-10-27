@@ -13,11 +13,14 @@ interface AudioContextType {
   isMuted: boolean;
   isExpanded: boolean;
   readingMode: boolean;
+  isScrubbing: boolean;
+  setIsScrubbing: (scrubbing: boolean) => void;
   playChapter: (story: Story, chapter: Chapter) => void;
   togglePlay: () => void;
   pause: () => void;
   resume: () => void;
-  seek: (seconds: number) => void;
+  seek: (seconds: number, immediateSpeech?: boolean) => void;
+  commitSeek: (seconds: number) => void;
   skipForward: (seconds?: number) => void;
   skipBackward: (seconds?: number) => void;
   setSpeed: (rate: number) => void;
@@ -43,11 +46,18 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [readingMode, setReadingMode] = useState<boolean>(false);
+  const [isScrubbing, setIsScrubbing] = useState<boolean>(false);
 
   // References
+  const isScrubbingRef = useRef<boolean>(false);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<number | null>(null);
+
+  const handleSetIsScrubbing = (scrubbing: boolean) => {
+    isScrubbingRef.current = scrubbing;
+    setIsScrubbing(scrubbing);
+  };
   
   // Ambient Soundscape Web Audio API refs
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -61,7 +71,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     // Load initial story from history or defaults
-    const saved = localStorage.getItem('velvet_last_listening');
+    const saved = localStorage.getItem('dino_last_listening') || localStorage.getItem('velvet_last_listening');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -78,11 +88,11 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     } else {
       const initialStory = SAMPLE_STORIES[0];
-      const initialChapter = initialStory.chapters[0]; // Chapter 5 released today
+      const initialChapter = initialStory.chapters[0];
       setCurrentStory(initialStory);
       setCurrentChapter(initialChapter);
       setDuration(initialChapter.durationSeconds);
-      setCurrentTime(45); // Start with a brief progress for preview
+      setCurrentTime(45);
     }
 
     return () => {
@@ -115,7 +125,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       masterGain.connect(ctx.destination);
       masterGainRef.current = masterGain;
 
-      // Warm acoustic romance chords (F - C - A soft warm harmonics)
+      // Warm acoustic chords
       const freqs = [174.61, 220.0, 261.63, 349.23];
       const oscs: OscillatorNode[] = [];
 
@@ -142,7 +152,6 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       oscNodesRef.current = oscs;
     } catch (e) {
-      // AudioContext policy safe catch
       console.warn('Web Audio ambient note:', e);
     }
   };
@@ -175,6 +184,9 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     if (isPlaying) {
       timerRef.current = window.setInterval(() => {
+        // Prevent ticker from jumping back while user is dragging/seeking
+        if (isScrubbingRef.current) return;
+
         setCurrentTime((prev) => {
           if (prev >= duration) {
             setIsPlaying(false);
@@ -200,7 +212,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     if (currentStory && currentChapter) {
       localStorage.setItem(
-        'velvet_last_listening',
+        'dino_last_listening',
         JSON.stringify({
           storyId: currentStory.id,
           chapterId: currentChapter.id,
@@ -296,9 +308,19 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     startSpeechNarrationAtTime(currentChapter, currentTime);
   };
 
-  const seek = (seconds: number) => {
+  const seek = (seconds: number, immediateSpeech: boolean = true) => {
     const clamped = Math.max(0, Math.min(seconds, duration));
     setCurrentTime(clamped);
+    if (immediateSpeech && isPlaying && currentChapter) {
+      startSpeechNarrationAtTime(currentChapter, clamped);
+    }
+  };
+
+  const commitSeek = (seconds: number) => {
+    const clamped = Math.max(0, Math.min(seconds, duration));
+    setCurrentTime(clamped);
+    isScrubbingRef.current = false;
+    setIsScrubbing(false);
     if (isPlaying && currentChapter) {
       startSpeechNarrationAtTime(currentChapter, clamped);
     }
@@ -358,7 +380,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const continueListening = (storyId: string) => {
     const story = SAMPLE_STORIES.find((s) => s.id === storyId);
     if (!story) return;
-    const saved = localStorage.getItem('velvet_last_listening');
+    const saved = localStorage.getItem('dino_last_listening') || localStorage.getItem('velvet_last_listening');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -394,11 +416,14 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isMuted,
         isExpanded,
         readingMode,
+        isScrubbing,
+        setIsScrubbing: handleSetIsScrubbing,
         playChapter,
         togglePlay,
         pause,
         resume,
         seek,
+        commitSeek,
         skipForward,
         skipBackward,
         setSpeed,

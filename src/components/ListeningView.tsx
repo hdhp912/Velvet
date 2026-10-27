@@ -36,6 +36,8 @@ export const ListeningView: React.FC = () => {
     playbackRate,
     togglePlay,
     seek,
+    commitSeek,
+    setIsScrubbing,
     skipForward,
     skipBackward,
     setSpeed,
@@ -51,11 +53,14 @@ export const ListeningView: React.FC = () => {
 
   const [showChaptersDrawer, setShowChaptersDrawer] = useState(false);
   const [showSynopsis, setShowSynopsis] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [scrubTime, setScrubTime] = useState<number | null>(null);
 
   if (!currentStory || !currentChapter) return null;
 
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const remainingTime = Math.max(0, duration - currentTime);
+  const activeTime = isDragging && scrubTime !== null ? scrubTime : currentTime;
+  const progressPercentage = duration > 0 ? (activeTime / duration) * 100 : 0;
+  const remainingTime = Math.max(0, duration - activeTime);
   const speeds = [0.75, 1, 1.25, 1.5, 2];
 
   const handleShare = () => {
@@ -214,21 +219,56 @@ export const ListeningView: React.FC = () => {
         {/* Persistent Scrubber in Listening View */}
         <div className="w-full max-w-[560px] mx-auto mb-6">
           <div className="relative py-2 flex items-center">
+            {/* Live Scrub Time Tooltip Badge */}
+            {isDragging && scrubTime !== null && (
+              <div
+                className="absolute -top-7 -translate-x-1/2 bg-[#873F55] text-white font-mono font-bold text-xs px-2.5 py-0.5 rounded-md shadow-lg pointer-events-none z-30"
+                style={{
+                  left: `${duration > 0 ? Math.max(0, Math.min(100, (scrubTime / duration) * 100)) : 0}%`,
+                }}
+              >
+                {formatTime(scrubTime)}
+              </div>
+            )}
+
             <input
               type="range"
               min={0}
               max={duration || 100}
               step="1"
-              value={currentTime}
-              onChange={(e) => seek(Number(e.target.value))}
-              onInput={(e) => seek(Number((e.target as HTMLInputElement).value))}
+              value={activeTime}
+              onPointerDown={(e) => {
+                setIsDragging(true);
+                const val = Number((e.currentTarget as HTMLInputElement).value);
+                setScrubTime(val);
+                setIsScrubbing(true);
+              }}
+              onInput={(e) => {
+                const val = Number((e.target as HTMLInputElement).value);
+                setScrubTime(val);
+                seek(val, false);
+              }}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setScrubTime(val);
+                commitSeek(val);
+                setIsDragging(false);
+                setIsScrubbing(false);
+              }}
+              onPointerUp={(e) => {
+                const val = Number((e.target as HTMLInputElement).value);
+                commitSeek(val);
+                setIsDragging(false);
+                setIsScrubbing(false);
+                setScrubTime(null);
+              }}
               aria-label="Seek track"
-              className="w-full h-2 bg-[#E7E0DA] rounded-full accent-[#873F55] cursor-pointer"
+              className="w-full h-2.5 bg-[#E7E0DA] rounded-full accent-[#873F55] cursor-pointer"
             />
           </div>
           <div className="flex justify-between text-xs text-[#746B65] tabular-nums font-mono">
-            <span>{formatTime(currentTime)}</span>
-            <span>-{formatTime(remainingTime)}</span>
+            <span className="font-medium text-[#292421]">{formatTime(activeTime)}</span>
+            <span className="font-medium">-{formatTime(remainingTime)}</span>
           </div>
         </div>
 
@@ -332,7 +372,7 @@ export const ListeningView: React.FC = () => {
                       playChapter(currentStory, ch);
                       setShowChaptersDrawer(false);
                     } else {
-                      showToast('This chapter requires Velvet Stories Premium');
+                      showToast('This chapter (Chapter 11+) requires Mysteries Unveiled by Dino Premium');
                     }
                   }}
                   className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-colors ${

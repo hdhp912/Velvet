@@ -79,19 +79,25 @@ export const HomeView: React.FC<HomeViewProps> = ({
     <div className="space-y-16 md:space-y-24 pb-12">
       {/* A. HERO SECTION (Editorial Split Layout) */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-8 pt-6 sm:pt-10">
+        {/* Highlight notification pill */}
+        <div className="mb-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F4E8EC] border border-[#E7E0DA] text-xs text-[#873F55] font-medium shadow-2xs">
+          <Sparkles className="w-3.5 h-3.5 text-[#873F55]" />
+          <span><strong>10 New Complete Sagas:</strong> 100% Free to Read & Listen · Chapters 1–10 Free on All Series</span>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Editorial Headline & Copy */}
           <div className="lg:col-span-7 flex flex-col justify-center">
             <span className="text-[11px] sm:text-xs font-semibold tracking-widest text-[#873F55] uppercase mb-3">
-              YOUR NEXT GREAT LOVE STORY
+              CURATED AUDIOBOOKS & MYSTERIES
             </span>
 
             <h1 className="font-editorial text-4xl sm:text-5xl lg:text-[56px] leading-[1.12] text-[#292421] mb-5 text-balance">
-              Some stories stay with you.
+              Mysteries Unveiled by Dino
             </h1>
 
             <p className="text-base sm:text-[17px] text-[#746B65] leading-relaxed max-w-[560px] mb-8">
-              Velvet Stories brings you serialized romance audiobooks recorded with single-narrator intimacy. Discover slow burns, emotional second chances, and immersive hundred-chapter sagas crafted for daily listening.
+              Experience serialized fiction and complete atmospheric mysteries recorded with single-narrator intimacy. Enjoy ten brand new complete sagas 100% free with full text and audio, plus chapters 1 through 10 free on every romance serial.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
@@ -99,28 +105,28 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onClick={() => onNavigateTab('discover')}
                 className="px-6 py-3.5 bg-[#873F55] text-white text-sm font-semibold rounded-lg hover:bg-[#6F3044] transition-colors shadow-xs"
               >
-                Explore stories
+                Explore all {stories.length} stories
               </button>
 
               <button
                 onClick={onNavigateMembership}
                 className="text-sm font-medium text-[#746B65] hover:text-[#292421] transition-colors inline-flex items-center gap-1 group py-2"
               >
-                <span>How membership works</span>
+                <span>Free chapters & membership</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
           </div>
 
-          {/* Right Column: Cinematic Romance Cover Art */}
+          {/* Right Column: Cinematic Cover Art */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
             <div
               onClick={() => onSelectStory(featuredStory.id)}
               className="group cursor-pointer relative aspect-[3/4] w-full max-w-[360px] rounded-[16px] overflow-hidden shadow-[0_12px_36px_rgba(41,36,33,0.12)] border border-[#E7E0DA] bg-[#F2EEEA]"
             >
               <img
-                src={BOOK_COVERS.hero}
-                alt="Velvet Stories Featured Production"
+                src={featuredStory.coverImage || BOOK_COVERS.hero}
+                alt="Mysteries Unveiled by Dino Featured Production"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               />
@@ -128,11 +134,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
               {/* Minimal floating metadata overlay */}
               <div className="absolute bottom-4 left-4 right-4 p-3.5 bg-[#292421]/90 backdrop-blur-md rounded-lg text-white border border-white/10 shadow-lg">
                 <div className="flex items-center justify-between text-[11px] text-[#D1C3C6] mb-1">
-                  <span>Velvet Original Audio</span>
-                  <span>100 Chapter Series</span>
+                  <span>Dino Original Production</span>
+                  <span className="text-[#D9A5B5] font-semibold">{featuredStory.status === 'Completed' ? 'Complete Saga · 100% Free' : 'Ch. 1–10 Free'}</span>
                 </div>
                 <h3 className="font-editorial text-base text-[#FFF9F5] leading-snug">
-                  The Cliffside Vows
+                  {featuredStory.title}
                 </h3>
               </div>
             </div>
@@ -420,13 +426,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="bg-[#2C2528] text-[#FFF9F5] rounded-[16px] p-8 sm:p-12 border border-[#423A3E]">
           <div className="max-w-[640px]">
             <span className="text-xs uppercase font-semibold text-[#D9A5B5] tracking-widest block mb-3">
-              Velvet Stories Membership
+              Mysteries Unveiled by Dino Membership
             </span>
             <h2 className="font-editorial text-3xl sm:text-4xl text-[#FFF9F5] leading-tight mb-4">
-              Make room for another story.
+              Make room for another mystery.
             </h2>
             <p className="text-sm sm:text-base text-[#D1C3C6] leading-relaxed mb-8">
-              Join our listener community to unlock all 100-chapter serialized sagas, uninterrupted audio streaming, and daily chapter releases the moment they drop.
+              Join our listener community to experience all 10 complete mystery sagas free, enjoy the first 10 chapters of serialized series at zero cost, and unlock continuous daily releases.
             </p>
             <div className="flex flex-wrap items-center gap-4">
               <button

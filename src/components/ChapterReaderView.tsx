@@ -315,7 +315,7 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
                   Unlock Chapter {chapter.number}
                 </h3>
                 <p className="text-sm text-[#746B65] max-w-md mx-auto mb-6 leading-relaxed">
-                  This chapter is part of the Velvet Stories Premium serial catalog. Unlock instant access to read and listen.
+                  This chapter (Chapter {chapter.number}) is part of the Mysteries Unveiled by Dino Premium serial catalog. Chapters 1 through 10 are completely free; unlock instant access to continue reading and listening.
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">

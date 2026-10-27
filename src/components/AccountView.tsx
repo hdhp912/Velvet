@@ -106,7 +106,7 @@ export const AccountView: React.FC<AccountViewProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-[#292421]">
-                  {user.isPremium ? 'Velvet Stories Premium' : 'Free Listener Account'}
+                  {user.isPremium ? 'Mysteries Unveiled by Dino Premium' : 'Free Listener Account'}
                 </span>
                 <span
                   className={`text-[10px] font-semibold px-2 py-0.5 rounded-[4px] uppercase tracking-wider ${

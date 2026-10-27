@@ -1,7 +1,639 @@
-import { Story } from '../types';
+import { Story, Chapter } from '../types';
 import { BOOK_COVERS } from '../assets/images';
 
+/**
+ * Accurately calculate the word count of a prose text (words separated by whitespace).
+ * Guarantees word count is based on actual words, NEVER character count.
+ */
+export const countWords = (text: string): number => {
+  if (!text) return 0;
+  return text.trim().split(/\s+/).filter(Boolean).length;
+};
+
+// Helper to construct a chapter with exact word count calculated dynamically
+const createChapter = (
+  id: string,
+  storyId: string,
+  number: number,
+  title: string,
+  durationSeconds: number,
+  publishedAt: string,
+  isPremium: boolean,
+  synopsis: string,
+  proseExcerpt: string
+): Chapter => ({
+  id,
+  storyId,
+  number,
+  title,
+  durationSeconds,
+  publishedAt,
+  isPremium,
+  wordCount: countWords(proseExcerpt),
+  synopsis,
+  proseExcerpt,
+});
+
 export const SAMPLE_STORIES: Story[] = [
+  // ==========================================
+  // 10 NEW COMPLETED STORIES (100% FREE TO READ & LISTEN)
+  // ==========================================
+  {
+    id: 'story-blackwood-manor',
+    title: 'The Secret of Blackwood Manor',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-arthur',
+      name: 'Arthur Pendelton',
+      accent: 'British',
+      tone: 'Atmospheric, deep, suspenseful',
+      gender: 'male',
+    },
+    coverImage: BOOK_COVERS.blackwoodManor,
+    synopsis:
+      'Summoned to the mist-shrouded moors of Yorkshire to appraise a centuries-old private library, antiquarian Vivienne discovers a locked wing guarded by the brooding Lord Nicholas Blackwood. Behind the carved mahogany doors lie century-old letters that reveal an unsolved disappearance—and an irresistible bond that defies all warnings.',
+    genre: 'Mystery',
+    tropes: ['Gothic Mystery', 'Ancestral Secrets', 'Slow Burn Suspense'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 780,
+    isFeatured: true,
+    releasedAt: '2026-08-10',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-bm-1',
+        'story-blackwood-manor',
+        1,
+        'Arrival at the Wuthering Moors',
+        250,
+        'Completed Sagas',
+        false,
+        'Vivienne arrives at Blackwood Manor as twilight descends over the bleak moors.',
+        'Rain hammered against the leaded panes of the carriage as the horses crested the final limestone ridge. Below in the hollow stood Blackwood Manor, a dark sprawling silhouette of Tudor chimneys, blackened stone arches, and towers wrapped in damp ivy.\n\nVivienne adjusted her leather valise on her lap. Her invitation had arrived sealed in black wax bearing the crest of a raven holding a silver key. Lord Nicholas Blackwood was rumored to never receive visitors, yet here she was, summoned to catalog a collection that had not seen sunlight in eighty years.\n\nWhen the iron front gates groaned open, a tall figure stood silhouetted beneath the stone portico. Nicholas did not offer an umbrella; his dark eyes fixed upon her with a penetrating intensity that made her pulse skip a beat. "You should have turned back at the village, Miss Carlisle," he said, his voice a low, gravelly baritone that seemed to vibrate with the moorland thunder.'
+      ),
+      createChapter(
+        'chap-bm-2',
+        'story-blackwood-manor',
+        2,
+        'The Locked East Wing',
+        260,
+        'Completed Sagas',
+        false,
+        'A midnight search through the forgotten corridors reveals a music box and a hidden diary.',
+        'Midnight struck with the hollow toll of a grandfather clock down the corridor. Vivienne held her brass candlestick steady, walking softly over Persian runners that swallowed her footsteps.\n\nThe door to the east wing was chained with wrought iron, but the heavy padlock hung open by a fraction of an inch. Pushing the door gently, the hinges gave only a faint hiss. Inside, dust hung suspended in the cold air like powdered silver.\n\nOn a mahogany secretaire sat a tarnished silver music box shaped like an open book. As Vivienne reached to touch the clasp, Nicholas’s shadow stretched across the wall before her. He stepped from the darkness, his wool coat unbuttoned, his hand gently covering hers before she could lift the lid.\n\n"Some melodies," Nicholas whispered, his breath warm against the chill of her cheek, "awaken ghosts that refuse to sleep again."'
+      ),
+      createChapter(
+        'chap-bm-3',
+        'story-blackwood-manor',
+        3,
+        'The Cipher in the Hearth',
+        270,
+        'Completed Sagas',
+        false,
+        'Behind the carved marble hearth, the final revelation untangles Nicholas’s family curse and binds them together.',
+        'The storm reached its fury at three in the morning, rattling the slate tiles above the library ceiling. Nicholas knelt beside Vivienne before the great fireplace, his long fingers carefully pressing the carved relief of the raven’s wing on the mantle.\n\nWith a muffled scrape of counterweights, a hollow cavity opened in the stone chimney. Inside lay a bundle of parchment wrapped in faded crimson ribbon. Nicholas drew it out, his fingers trembling with emotions he had spent a decade locking behind stone walls.\n\n"My father didn’t abandon us," Nicholas murmured, looking at the faded ink signed by the missing earl. "He died protecting the secret of the valley."\n\nVivienne placed her hand over his, feeling the tension slowly leave his shoulders. "And you have carried the guilt alone for ten years, Nicholas. But the night is over now." In the dying embers of the hearth, Nicholas pulled her close, kissing her with an overwhelming tenderness born of surviving the storm together.'
+      ),
+    ],
+  },
+  {
+    id: 'story-crimson-cove',
+    title: 'The Shadow of Crimson Cove',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-eleanor',
+      name: 'Eleanor Sterling',
+      accent: 'British',
+      tone: 'Evocative, nuanced, captivating',
+      gender: 'female',
+    },
+    coverImage: BOOK_COVERS.crimsonCove,
+    synopsis:
+      'Investigative journalist Maya rents a cliffside cabin on Crimson Cove to look into an ocean salvage operation. What she encounters is Captain Daniel Thorne, a fiercely private mariner with nautical charts that should not exist. When secrets from the deep wash ashore, their intense chemistry becomes impossible to ignore.',
+    genre: 'Romantic Suspense',
+    tropes: ['Coastal Mystery', 'Enemies to Lovers', 'Hidden Past'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 750,
+    isFeatured: true,
+    releasedAt: '2026-08-15',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-cc-1',
+        'story-crimson-cove',
+        1,
+        'Tide of Broken Glass',
+        240,
+        'Completed Sagas',
+        false,
+        'Maya discovers a sealed vintage bottle washed ashore on Crimson Cove.',
+        'The ocean at Crimson Cove was named for the red algae that lit the surf in ethereal crimson waves under autumn moons. Maya stood barefoot at the edge of the froth, holding a glass bottle encrusted in barnacles.\n\nInside, dry and protected by lead wax, lay a naval map marked with latitude coordinates and the signature of a vessel reported lost in 1944. A shadow fell across the damp sand.\n\n"You’re trespassing on private shoreline, Miss Lin," Daniel Thorne said. He stood in a weather-beaten pea coat, sea spray glistening in his dark curls. He didn’t reach for the bottle; he simply watched her with narrowed eyes that held both warning and intrigue.\n\n"I’m investigating a story, Captain Thorne," Maya replied, holding the bottle firmly against her chest. "And I think you know exactly what is buried in the underwater caves."'
+      ),
+      createChapter(
+        'chap-cc-2',
+        'story-crimson-cove',
+        2,
+        'The Diver’s Compass',
+        250,
+        'Completed Sagas',
+        false,
+        'Inside Daniel’s boathouse workshop, an antique brass compass unlocks the mystery.',
+        'The boathouse smelled of pine pitch, linseed oil, and old salt. Rain beat steadily on the corrugated tin roof as Daniel spread out his nautical blueprints on the workbench.\n\n"If the harbor authorities find out we have this chart," Daniel said quietly, leaning across the table until he was inches from her, "neither of us will be leaving this cove."\n\nMaya looked into his eyes, refusing to flinch. "I didn’t ask for permission, Daniel. I asked if you were brave enough to finish what your grandfather started."\n\nDaniel chuckled softly, a low sound that sent a sudden rush of heat through her veins. "You’re dangerous, Maya. Not because you’re a reporter, but because you make me want to trust you."'
+      ),
+      createChapter(
+        'chap-cc-3',
+        'story-crimson-cove',
+        3,
+        'Beneath the Crimson Tide',
+        260,
+        'Completed Sagas',
+        false,
+        'Diving into the sea caverns brings the truth to light and seals their devotion.',
+        'The underwater cavern opened into a hidden sea grotto illuminated by natural luminescent moss. When their helmets broke the surface of the calm subterranean pool, Daniel pulled Maya up onto the dry granite ledge.\n\nThere, resting on the rock, was the iron dispatch case of the missing courier ship. The truth had finally been brought into the light: the salvage was not illicit gold, but the names of soldiers whose sacrifices had been erased by corrupt officials.\n\nDaniel stripped off his diving mask, looking down at Maya in the glow of the cave. "We did it," he whispered, his hands cradling her wet face. "We gave them their honor back." When he kissed her, the roar of the tide outside faded into pure silence, leaving only the warmth of their breath in the quiet sanctuary of the grotto.'
+      ),
+    ],
+  },
+  {
+    id: 'story-midnight-cipher',
+    title: 'The Midnight Cipher',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-james',
+      name: 'James Montgomery',
+      accent: 'American',
+      tone: 'Sharp, resonant, captivating',
+      gender: 'male',
+    },
+    coverImage: BOOK_COVERS.midnightCipher,
+    synopsis:
+      'In the velvet shadows of Vienna’s historic opera house, cryptographic analyst Julian Cross crosses paths with cellist Elena Rostova. Encrypted musical scores, dangerous cabals, and an undeniable passion ignite as they race against time to decode a century-old secret.',
+    genre: 'Mystery',
+    tropes: ['Secret Society', 'Codebreaking Romance', 'High Stakes'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 760,
+    isFeatured: false,
+    releasedAt: '2026-08-20',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-mc-1',
+        'story-midnight-cipher',
+        1,
+        'The Cello in Box Nine',
+        245,
+        'Completed Sagas',
+        false,
+        'A mysterious score delivered to Elena’s dressing room sparks a dangerous chase.',
+        'The applause from the auditorium was still vibrating through the red velvet curtains when Elena opened her dressing room door. On her vanity table rested a handwritten score for solo cello, its staves filled with irregular rest notations and subtle cipher symbols.\n\nA shadow detached itself from the corridor alcove. Julian Cross stepped into the room, impeccably tailored in evening black, his gaze scanning the exits before fixing on the sheet music.\n\n"Don’t play the final measure, Miss Rostova," Julian said calmly, his American accent crisp against the baroque architecture. "The man who penned that cipher was assassinated twenty minutes ago."'
+      ),
+      createChapter(
+        'chap-mc-2',
+        'story-midnight-cipher',
+        2,
+        'Vienna Under Gaslight',
+        255,
+        'Completed Sagas',
+        false,
+        'Fleeing through the cobbles of the Ringstrasse, Julian and Elena decode the musical key.',
+        'A light snow fell over the cobbles of the Stephansplatz. Inside a secluded booth at Café Central, Julian laid out his cryptographer’s grid beside Elena’s score.\n\n"The notes aren’t melodic," Elena realized, her fingertips tracing the clef. "They’re frequency coordinates. Bach’s B-A-C-H motif is used as the substitution key."\n\nJulian looked up at her, an appreciative smile curling his mouth. "You’re brilliant, Elena. Most agents take weeks to recognize musical steganography."\n\n"I’ve spent twenty years listening to what isn’t being said," Elena answered softly, meeting his steady gaze across the steam of their coffee.'
+      ),
+      createChapter(
+        'chap-mc-3',
+        'story-midnight-cipher',
+        3,
+        'The Final Cadence',
+        260,
+        'Completed Sagas',
+        false,
+        'At the Imperial Archive, the cipher reveals a treaty that protects both their futures.',
+        'High in the domed gallery of the Imperial Archive, the final cipher fell into place. The document exposed the syndicate that had hunted both of them, disarming their adversaries with undeniable evidence.\n\nJulian closed the steel lockbox and turned to Elena under the vaulted skylight. The morning sun was just beginning to touch the spire of St. Stephen’s.\n\n"The mission is finished," Julian said quietly, his voice dropping low. "I’m supposed to return to Washington on the evening flight."\n\nElena stepped toward him, resting her hand over his heart. "And what does the analyst in you want, Julian?"\n\n"To forget the flight," he whispered, wrapping his arms around her waist as he pulled her in for a breathless, long-awaited kiss.'
+      ),
+    ],
+  },
+  {
+    id: 'story-whispers-fog',
+    title: 'Whispers Beneath the Fog',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-sophie',
+      name: 'Sophie Hartwell',
+      accent: 'British',
+      tone: 'Lyrical, haunting, intimate',
+      gender: 'female',
+    },
+    coverImage: BOOK_COVERS.fogShrouded,
+    synopsis:
+      'A secluded Victorian conservatory shrouded in coastal mist holds a greenhouse that has not been opened in seventy years. When botanist Gabriel and archivist Clara unlock its leaded doors, forgotten botany, phantom whispers, and passionate declarations unravel in the heart of the autumn chill.',
+    genre: 'Gothic Romance',
+    tropes: ['Haunted Estate', 'Forbidden Desire', 'Unsolved Mystery'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 740,
+    isFeatured: false,
+    releasedAt: '2026-08-28',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-wf-1',
+        'story-whispers-fog',
+        1,
+        'The Iron Conservatory',
+        235,
+        'Completed Sagas',
+        false,
+        'Clara arrives at the fog-covered glasshouse where rare nocturnal orchids thrive.',
+        'The autumn fog had rolled in off the channel, thick as sheep’s fleece, turning the great Victorian glasshouse into a cathedral of white shadows. Clara polished her brass magnifying glass as Gabriel turned the skeleton key in the rusted padlock.\n\n"People say this garden was cursed after Lady Genevieve disappeared in 1898," Clara observed, stepping onto the damp brick walkway.\n\nGabriel smiled faintly, locking the iron gate behind them. "People say many things when they are afraid of beauty, Clara. But you and I know that plants keep better secrets than men."'
+      ),
+      createChapter(
+        'chap-wf-2',
+        'story-whispers-fog',
+        2,
+        'Scent of Night Jasmine',
+        245,
+        'Completed Sagas',
+        false,
+        'Beneath the canopy of nocturnal flowers, an encrypted diary from 1898 is unearthed.',
+        'The scent of night-blooming jasmine was intoxicating under the soaring iron dome. Rain pattered against the glass like thousands of fingertips.\n\nGabriel reached up into the hollow branches of a century-old camellia tree, dislodging a brass cylinder sealed with pitch. Inside lay Genevieve’s handwritten diary.\n\n"She didn’t disappear," Clara whispered, reading the delicate script by candlelight. "She eloped with the head gardener. The family hid her letters to protect their aristocratic pride."\n\nGabriel looked at Clara, his eyes dark with unmasked longing. "Can you blame them? Giving up an empire for love... some people would burn the whole world down for that."'
+      ),
+      createChapter(
+        'chap-wf-3',
+        'story-whispers-fog',
+        3,
+        'Clear Skies Over the Moors',
+        260,
+        'Completed Sagas',
+        false,
+        'Dawn clears the mist, revealing truth, freedom, and a new life together.',
+        'By dawn, the coastal gale blew the fog away, revealing the blue sparkling waters of the channel below the cliffs. Clara leaned against the iron balustrade of the terrace, the cleared letters in her hand.\n\nGabriel walked up behind her, draping his wool jacket over her shoulders. "Her story is vindicated now, Clara. The estate has acknowledged her rightful heirs."\n\nClara turned into his arms, feeling the steady beat of his heart. "And what about our story, Gabriel?"\n\n"Our story," he said, cupping her chin and lifting her gaze to his, "is only on its first chapter." And with the morning sun warming the frosted panes behind them, their kiss made all the cold years dissolve.'
+      ),
+    ],
+  },
+  {
+    id: 'story-clocktower-echoes',
+    title: 'Echoes in the Clocktower',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-david',
+      name: 'David Hawthorne',
+      accent: 'British',
+      tone: 'Warm, rhythmic, erudite',
+      gender: 'male',
+    },
+    coverImage: BOOK_COVERS.clocktower,
+    synopsis:
+      'High above the chiming bells of Old St. Jude’s in London, horologist Thomas and historian Beatrix repair a monumental medieval clock mechanism. Inside the brass escapement gears, a concealed timepiece contains a message that rewrites the history of a lost royal treasury.',
+    genre: 'Mystery',
+    tropes: ['Time Slip', 'Old London Mystery', 'Friends to Lovers'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 730,
+    isFeatured: false,
+    releasedAt: '2026-09-02',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-ce-1',
+        'story-clocktower-echoes',
+        1,
+        'The Pendulum Chamber',
+        230,
+        'Completed Sagas',
+        false,
+        'Beatrix climbs the spiral staircase to the clock chamber high above London.',
+        'Two hundred and fourteen stone steps wound up the spine of the tower. When Beatrix reached the clockwork loft, the heavy brass pendulum was swinging with a deep, rhythmic tick that seemed to pulse through the oak floorboards.\n\nThomas was covered in engine grease up to his forearms, examining the escapement wheel with an oil lamp. When he saw her, his weary face broke into a familiar grin that made all her exhaustion evaporate.\n\n"You’re late, Bea," he tease. "The Queen Anne mechanism has stopped three times since midnight."\n\n"I brought the blueprints from the Guildhall archive, Thomas," Beatrix replied, stepping onto the platform beside him. "And you’re not going to believe what is hidden inside the hour train."'
+      ),
+      createChapter(
+        'chap-ce-2',
+        'story-clocktower-echoes',
+        2,
+        'The Golden Escapement',
+        240,
+        'Completed Sagas',
+        false,
+        'Disassembling the brass gearing exposes an engraved miniature pocket watch.',
+        'With surgical care, Thomas loosened the retaining screws of the main gear barrel. Out slid a miniature watch crafted from solid gold and engraved with the crest of a lost Tudor guild.\n\nInside the case was an inscription: Time holds no power over those who dare to love beyond their station.\n\nBeatrix looked up from the inscription, finding Thomas’s gaze already resting on her. The silence between the ticks of the great pendulum felt suddenly vast.\n\n"We’ve worked together for five years, Thomas," Beatrix said softly, her breath catching. "Did you know this was in here?"\n\n"I hoped it was," Thomas murmured, stepping closer. "Because I needed to know if you believed those words as much as I do."'
+      ),
+      createChapter(
+        'chap-ce-3',
+        'story-clocktower-echoes',
+        3,
+        'Bells at Noon',
+        260,
+        'Completed Sagas',
+        false,
+        'The clock strikes twelve in glorious harmony, sealing their future.',
+        'At precisely twelve o’clock, the great bronze bells rang out across the London skyline. The restored mechanism moved with effortless, hypnotic precision, each gear humming in balance.\n\nHigh above the rooftops, with the Thames winding in silver ribbons beneath them, Thomas took Beatrix’s hand and slipped the antique gold watch onto a ribbon around her neck.\n\n"It took three centuries for that timepiece to find its keeper," he said, pulling her into an embrace. "And it took me five years to realize that every second away from you was wasted time." As the bells resonated through the timber beams, Beatrix kissed him with all the passion held back across years of friendship.'
+      ),
+    ],
+  },
+  {
+    id: 'story-lost-locket',
+    title: 'The Locket of Lost Memories',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-victoria',
+      name: 'Victoria Sinclair',
+      accent: 'British',
+      tone: 'Gentle, emotional, haunting',
+      gender: 'female',
+    },
+    coverImage: BOOK_COVERS.lostLocket,
+    synopsis:
+      'Jewelry restorer Camille receives an intricately enameled Victorian locket found at an estate sale. When antique collector Julian arrives to claim it as a family heirloom, they realize the miniature portrait inside mirrors Camille’s own grandmother, unlocking decades of hidden love and family secrets.',
+    genre: 'Second Chance',
+    tropes: ['Antique Mystery', 'Second Chance', 'Slow Burn'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 720,
+    isFeatured: false,
+    releasedAt: '2026-09-10',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-ll-1',
+        'story-lost-locket',
+        1,
+        'The Pearl and Sapphire Clasp',
+        230,
+        'Completed Sagas',
+        false,
+        'Camille examines the intricate spring mechanism of the forgotten heirloom.',
+        'Under the microscope, the enamel on the forget-me-not petals was as vibrant as if it had been painted yesterday. Camille manipulated the jeweler’s probe with practiced delicacy, touching the miniature sapphire that hid the spring release.\n\nThe locket opened with a soft click. Inside was a tiny daguerreotype of a young woman with dark curls and hazel eyes—the exact likeness of Camille’s grandmother in Paris before the war.\n\nThe brass bell above the shop door jingled. Julian Marchand entered, shaking rain from his cashmere coat. "I believe you have an item that belonged to my great-uncle," he said, his voice quiet yet commanding.'
+      ),
+      createChapter(
+        'chap-ll-2',
+        'story-lost-locket',
+        2,
+        'Parisian Letters',
+        240,
+        'Completed Sagas',
+        false,
+        'Comparing family archives reveals why their families were torn apart decades ago.',
+        'By candlelight in the studio, Camille and Julian unfolded the fragile onion-skin letters tucked behind the miniature frame. The dates lined up: the winter of 1941 in Saint-Germain-des-Prés.\n\n"They separated so she could escape across the border," Julian said, his throat tight with emotion. "He stayed behind to smuggle other families out, promising he would find her after the armistice."\n\n"She waited at the Gare de Lyon every Sunday for three years," Camille whispered, tears pricking her eyes. "She never spoke his name because it hurt too deeply."\n\nJulian reached across the table, taking her hand gently between his. "Then let us finish their journey, Camille. For both of them."'
+      ),
+      createChapter(
+        'chap-ll-3',
+        'story-lost-locket',
+        3,
+        'The Seine at Sunset',
+        250,
+        'Completed Sagas',
+        false,
+        'Standing together on the Pont des Arts, the past heals and a new promise is made.',
+        'The sunset bathed the limestone facades along the Seine in rich shades of apricot and rose. Together on the Pont des Arts, Camille and Julian held the locket over the river, letting the long-standing sorrow of the past wash away in the golden reflection of the water.\n\n"They would be so proud," Julian said, looking into Camille’s eyes with absolute clarity. "That their legacy didn’t end in tragedy, but brought you to me."\n\nCamille fastened the locket around her neck, smiling as Julian drew her into his arms. As the church bells of Notre-Dame rang across the river, their lips met, sealing the romance that time had tried and failed to erase.'
+      ),
+    ],
+  },
+  {
+    id: 'story-obsidian-key',
+    title: 'Riddle of the Obsidian Key',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-marcus',
+      name: 'Marcus Sterling',
+      accent: 'American',
+      tone: 'Commanding, velvety, brooding',
+      gender: 'male',
+    },
+    coverImage: BOOK_COVERS.obsidianKey,
+    synopsis:
+      'Security consultant Ryan and art curator Tessa are trapped inside a private underground vault during an attempted heist. Armed with only a carved obsidian key and their wits, they must outsmart the perpetrators while fighting an undeniable mutual attraction that burns hotter with every passing minute.',
+    genre: 'Romantic Suspense',
+    tropes: ['Heist Mystery', 'Forced Proximity', 'Billionaire Mystery'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 740,
+    isFeatured: false,
+    releasedAt: '2026-09-18',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-ok-1',
+        'story-obsidian-key',
+        1,
+        'The Vault Lockdown',
+        235,
+        'Completed Sagas',
+        false,
+        'The titanium blast doors slam shut, trapping Ryan and Tessa three levels below Manhattan.',
+        'The siren wailed once before the heavy hydraulic doors sealed with a shuddering metallic thud. Total blackout followed for three seconds until the crimson emergency strips flickered to life along the concrete walls.\n\nTessa backed against the steel display case, her breath coming in ragged gasps. "The security mainframe just decoupled. We’re locked in level four."\n\nRyan stepped in front of her, pulling his tactical flashlight from his holster. His broad frame radiated calm authority. "Stay close to me, Tessa. Whoever tripped the alarm didn’t account for the manual override in the founder’s chamber."'
+      ),
+      createChapter(
+        'chap-ok-2',
+        'story-obsidian-key',
+        2,
+        'The Carved Lock',
+        245,
+        'Completed Sagas',
+        false,
+        'In the founder’s chamber, the obsidian key reveals a hidden escape tunnel.',
+        'The founder’s vault was lined with black volcanic glass. In the center pedestal rested a lock mechanism with no keyhole, only an obsidian indentation shaped like an Egyptian scarab.\n\nTessa reached into her velvet evening clutch and produced the obsidian amulet she had safeguarded since the exhibition began. When she set it in the groove, the mechanism clicked with pneumatic precision.\n\nRyan looked down at her, the crimson light carving sharp shadows across his jaw. "You had the override key all along."\n\n"I didn’t know who to trust until I saw you throw yourself between me and the blast door," Tessa murmured, her hand lingering on his forearm.'
+      ),
+      createChapter(
+        'chap-ok-3',
+        'story-obsidian-key',
+        3,
+        'Dawn Over Manhattan',
+        260,
+        'Completed Sagas',
+        false,
+        'Exiting onto the rooftop terrace, the suspects are apprehended and love triumphs.',
+        'The emergency staircase opened onto the private rooftop garden sixty floors above Manhattan. Police helicopters circled overhead with spotlights pinned on the apprehended thieves on the street below.\n\nRyan holstered his radio and walked toward Tessa, who stood watching the city wake up under pale pink skies. He reached out, gently wrapping a warm fleece jacket around her bare shoulders.\n\n"You were incredible down there," he said, his baritone soft and intimate.\n\nTessa leaned into his chest, looking up into his dark eyes. "I had a great partner, Mr. Sterling."\n\n"I don’t want to be just partners anymore, Tessa," Ryan answered, before lowering his head and kissing her with a fierce, possessive tenderness that swept all danger away.'
+      ),
+    ],
+  },
+  {
+    id: 'story-vanished-dawn',
+    title: 'Vanished at Dawn',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-evelyn',
+      name: 'Evelyn Brooks',
+      accent: 'American',
+      tone: 'Bright, sharp, emotionally vivid',
+      gender: 'female',
+    },
+    coverImage: BOOK_COVERS.vanishedDawn,
+    synopsis:
+      'When an heiress vanishes from her family estate on Lake Tahoe at sunrise, detective Luke Bennett teams up with local wilderness guide Avery to follow tracks deep into the snowbound Sierra peaks. What begins as a search and rescue turns into an uncovering of buried secrets and an undeniable passion.',
+    genre: 'Mystery',
+    tropes: ['Missing Heiress', 'Small Town Secrets', 'Investigative Romance'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 730,
+    isFeatured: false,
+    releasedAt: '2026-09-25',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-vd-1',
+        'story-vanished-dawn',
+        1,
+        'Tracks in the Fresh Powder',
+        230,
+        'Completed Sagas',
+        false,
+        'Avery discovers snowshoe tracks heading toward the abandoned logging cabin.',
+        'The morning air in Lake Tahoe was twenty degrees below freezing, crystalline and biting. Avery zipped her thermal parka to the chin as Detective Luke Bennett climbed out of his four-wheel drive.\n\n"The family insists she was abducted from her bedroom," Luke said, gesturing toward the sprawling cedar mansion behind them.\n\nAvery crouched by the treeline, pointing to the deliberate herringbone pattern in the fresh snow. "No signs of a struggle, Detective. These tracks were made by someone who packed light and knew exactly how to avoid the security cameras."'
+      ),
+      createChapter(
+        'chap-vd-2',
+        'story-vanished-dawn',
+        2,
+        'The Cabin at Emerald Ridge',
+        240,
+        'Completed Sagas',
+        false,
+        'Sheltering from a sudden blizzard inside a timber cabin brings their feelings to light.',
+        'A squall swept over the ridge by mid-afternoon, blinding white snow erasing the trail. Luke kicked open the heavy pine door of the abandoned ranger shelter and ushered Avery inside.\n\nWithin minutes, a small fire crackled in the cast iron stove. Luke sat on the wood bench, his hands warming beside hers.\n\n"You have an instinct for this wilderness, Avery," he murmured, his blue eyes holding hers in the amber firelight. "And you see through people better than any investigator I’ve worked with in Reno."\n\nAvery smiled, feeling her pulse race. "Living out here teaches you to notice the quiet truths people hide behind loud words."'
+      ),
+      createChapter(
+        'chap-vd-3',
+        'story-vanished-dawn',
+        3,
+        'Sunrise Over Tahoe',
+        260,
+        'Completed Sagas',
+        false,
+        'Finding the heiress safe exposes the corporate fraud and unites Luke and Avery.',
+        'The heiress was found safe in the valley cabin, ready to testify against the corrupt board of directors who had threatened her life. With the case resolved and justice secured, Luke and Avery stood on the scenic overlook overlooking the sapphire expanse of Lake Tahoe.\n\nLuke turned to Avery, the mountain breeze ruffling his dark hair. "I’m supposed to file my closing report in Reno tomorrow. But I don’t want to leave Tahoe."\n\n"There’s plenty of room in the mountains for both of us, Luke," Avery said softly.\n\nLuke reached for her hand, pulling her close. "Not just the mountains, Avery. With you." He leaned in and kissed her as the morning sun turned the snowy peaks into shimmering gold.'
+      ),
+    ],
+  },
+  {
+    id: 'story-glass-enigma',
+    title: 'The Glass Enigma',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-julian-b',
+      name: 'Julian Blackwood',
+      accent: 'American',
+      tone: 'Deep, reflective, rich',
+      gender: 'male',
+    },
+    coverImage: BOOK_COVERS.glassEnigma,
+    synopsis:
+      'Art restorer Madeline discovers a hidden underpainting beneath a Renaissance masterpiece, revealing an encoded confession by a Venetian master. When museum director Alexander realizes their discovery threatens high-society collectors, they join forces to protect the truth and discover each other.',
+    genre: 'Mystery',
+    tropes: ['Art Forgery', 'High Society Intrigue', 'Slow Burn'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 735,
+    isFeatured: false,
+    releasedAt: '2026-10-02',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-ge-1',
+        'story-glass-enigma',
+        1,
+        'Pigments and Shadows',
+        235,
+        'Completed Sagas',
+        false,
+        'Infrared reflectography reveals a hidden portrait beneath a 15th-century canvas.',
+        'The infrared scanner hummed softly in the conservation laboratory. Madeline adjusted the contrast filter on the monitor, and as the top layer of varnish disappeared, the ghostly outline of a woman’s face appeared beneath the Madonna’s robes.\n\n"That’s impossible," Alexander said, leaning over her shoulder so close that his linen sleeve brushed her arm. "That portrait was documented as destroyed in the fire of 1797."\n\n"It wasn’t destroyed," Madeline answered, her heart hammering against her ribs. "The artist painted over his true love to save her from the Inquisition."'
+      ),
+      createChapter(
+        'chap-ge-2',
+        'story-glass-enigma',
+        2,
+        'The Venetian Ledger',
+        240,
+        'Completed Sagas',
+        false,
+        'Tracing the provenance exposes a counterfeit ring among elite auction houses.',
+        'Working late in Alexander’s private library, they uncovered the forged provenance certificates created by a modern gallery cartel to auction stolen heirlooms.\n\nAlexander closed the leather ledger, running a hand through his dark hair. "If we publish this, every auction house from Zurich to Manhattan will come after our reputations."\n\nMadeline touched his hand, her voice steady and warm. "Art is about truth, Alexander. If we compromise on truth, what are we protecting?"\n\nAlexander looked at her, his eyes filled with fierce admiration. "You make me remember why I fell in love with this work, Madeline. And why I can’t stop thinking about you."'
+      ),
+      createChapter(
+        'chap-ge-3',
+        'story-glass-enigma',
+        3,
+        'The Masterpiece Revealed',
+        260,
+        'Completed Sagas',
+        false,
+        'The public unveiling restores history and seals their bond forever.',
+        'The grand gala at the metropolitan gallery was packed with international scholars and collectors. When the curtain fell, revealing the restored masterpiece and its authentic history, a standing ovation echoed through the marble hall.\n\nLater, in the quiet gallery after the crowds had departed, Alexander found Madeline standing before the illuminated painting. He walked up behind her and slipped his arms around her waist.\n\n"A masterpiece for the world," he whispered in her ear. "And the woman who found it is the only masterpiece I care about." Madeline turned in his arms, smiling as their kiss resonated in the quiet beauty of the gallery.'
+      ),
+    ],
+  },
+  {
+    id: 'story-whispering-gallery',
+    title: 'The Whispering Gallery',
+    author: 'Dino Vance',
+    narrator: {
+      id: 'narrator-eleanor-v',
+      name: 'Eleanor Sterling',
+      accent: 'British',
+      tone: 'Intimate, warm, evocative',
+      gender: 'female',
+    },
+    coverImage: BOOK_COVERS.whisperingGallery,
+    synopsis:
+      'Under the soaring dome of an English cathedral, acoustic anomalies allow whispering voices to carry across two hundred feet. Archivist Hannah and acoustic engineer Lucas decipher hidden messages whispered across the gallery, unmasking an ancient royal love pact that changes their lives.',
+    genre: 'Gothic Romance',
+    tropes: ['Grand Cathedral Secrets', 'Hidden Letters', 'Scholarly Romance'],
+    status: 'Completed',
+    totalPlannedChapters: 3,
+    publishedChaptersCount: 3,
+    totalDurationSeconds: 740,
+    isFeatured: false,
+    releasedAt: '2026-10-10',
+    updatedAt: '2026-10-25',
+    chapters: [
+      createChapter(
+        'chap-wg-1',
+        'story-whispering-gallery',
+        1,
+        'Echoes in the Dome',
+        235,
+        'Completed Sagas',
+        false,
+        'Hannah tests the parabolic stone curve of the Whispering Gallery at dusk.',
+        'The cathedral had closed its heavy oak doors for the night. Hannah pressed her ear against the smooth curved limestone wall of the gallery, one hundred feet above the nave.\n\nFrom across the vast circular dome, as clear as if he were standing beside her, Lucas’s whisper arrived through the acoustics of the stone: "Can you hear me, Hannah?"\n\nHannah smiled into the stone. "Every syllable, Lucas. What did you find in the crypt archives?"\n\n"A secret vault," his voice carried through the stone, filled with quiet awe. "And a message meant only for you."'
+      ),
+      createChapter(
+        'chap-wg-2',
+        'story-whispering-gallery',
+        2,
+        'The Stone Inscription',
+        245,
+        'Completed Sagas',
+        false,
+        'Decrypting the whispered coordinates leads to a hidden alcove behind the organ pipes.',
+        'Behind the gilded pipes of the grand cathedral organ lay a narrow chamber hidden since the seventeenth century. Lucas held the lantern as Hannah examined the limestone carvings.\n\nThere, carved into the stone, was an inscription: What the ear receives in secret, the heart keeps forever.\n\nLucas stepped into the narrow space, looking down at Hannah in the golden lamplight. "For months I’ve spoken to you across the dome, Hannah. But tonight, I want to say this without any distance between us."\n\nHannah looked up into his eyes, her breath catching. "I’m listening, Lucas."'
+      ),
+      createChapter(
+        'chap-wg-3',
+        'story-whispering-gallery',
+        3,
+        'Hymn of the Dawn',
+        260,
+        'Completed Sagas',
+        false,
+        'Morning sunlight streams through the rose window, illuminating an everlasting love.',
+        'Morning sunlight pierced the cathedral’s rose window, casting kaleidoscopic jewel tones of ruby, sapphire, and gold across the marble flagstones. The ancient letters had been safely placed in the cathedral museum, solving a century-old royal mystery.\n\nLucas took Hannah’s hand as they stood beneath the great dome. "The acoustic phenomenon works both ways, you know," he smiled tenderly.\n\n"What do you mean?" Hannah asked.\n\n"When you whispered across the gallery that you loved working with me," Lucas said softly, "I heard every beat of your heart." He pulled her close, kissing her deeply as the organ began to play its morning chorale, sealing their love in the majesty of the cathedral.'
+      ),
+    ],
+  },
+
+  // ==========================================
+  // SERIALIZED / ONGOING STORIES
+  // POLICY: CHAPTERS 1 TO 10 ARE 100% FREE!
+  // ONLY CHAPTER 11+ REQUIRES PREMIUM VIP MEMBERSHIP!
+  // ==========================================
   {
     id: 'story-summer-stayed',
     title: 'The Summer We Almost Stayed',
@@ -15,7 +647,7 @@ export const SAMPLE_STORIES: Story[] = [
     },
     coverImage: BOOK_COVERS.summerStayed,
     synopsis:
-      'Seven summers after walking away from the sun-drenched cliffs of Positano, architect Julian returns to restore an estate—only to discover the woman who kept his letters still lives next door. An aching, slow-burning romance of second chances, coastal salt, and promises never forgotten.',
+      'Seven summers after walking away from the sun-drenched cliffs of Positano, architect Julian returns to restore an estate—only to discover the woman who kept his letters still lives next door. An aching, slow-burning romance of second chances, coastal salt, and promises never forgotten. Chapters 1–10 are free to read and listen!',
     genre: 'Slow Burn',
     tropes: ['Slow Burn', 'Second Chance', 'Small Town Romance'],
     status: 'Ongoing',
@@ -26,72 +658,128 @@ export const SAMPLE_STORIES: Story[] = [
     releasedAt: '2026-06-12',
     updatedAt: '2026-10-25',
     chapters: [
-      {
-        id: 'chap-ss-5',
-        storyId: 'story-summer-stayed',
-        number: 5,
-        title: 'The Harbor Lanterns at Midnight',
-        durationSeconds: 240,
-        publishedAt: 'Today (Oct 25)',
-        isPremium: true,
-        wordCount: 520,
-        synopsis: 'NEW TODAY: Julian and Elena share a quiet confession beneath the amber lanterns of the harbor dock.',
-        proseExcerpt:
-          'Midnight arrived in Positano with a soft offshore breeze that smelled of wild rosemary and cool salt spray. Julian leaned against the weathered cypress railing of the pier, watching the reflection of the golden harbor lanterns stretch across the black water. When footsteps clicked softly on the travertine flagstones behind him, he didn’t need to turn to know she had come.\n\n"You should be asleep," Elena murmured, pulling her cream wool shawl closer around her shoulders. Her dark hair was undone, spilling in loose waves over the lapel of her coat.\n\n"I tried," Julian admitted, turning toward her. The lamplight caught the amber flecks in her eyes, eyes that had haunted his sketchbooks across three continents. "Every time I closed my eyes, I kept hearing the bells of Santa Maria Assunta, and the sound of your voice asking why I waited so long to come back."\n\nElena took a step closer, close enough that he could catch the familiar scent of orange blossom that had always belonged to her. "And what answer did you find in the dark, Julian?"\n\n"That I was terrified," he said, his voice dropping to a raw whisper that barely carried above the lap of the tide. "Terrified that if I returned, you would look at me like a stranger. But seeing you tonight... I realize that leaving was the only mistake I ever truly made."'
-      },
-      {
-        id: 'chap-ss-1',
-        storyId: 'story-summer-stayed',
-        number: 1,
-        title: 'The Sound of the Tide at Dusk',
-        durationSeconds: 210,
-        publishedAt: 'Oct 18',
-        isPremium: false,
-        wordCount: 460,
-        synopsis: 'Julian arrives by ferry at the Amalfi harbor as the sun dips below the terrace.',
-        proseExcerpt:
-          'The ferry engine sputtered into silence just as the bells of Santa Maria Assunta struck seven. Salt air hit Julian before the harbor did—sharp, briny, and steeped in lemons warming on stone terraces. He adjusted the leather strap of his drafting satchel, his fingers brushing the creased corner of an envelope he had carried across four borders.\n\nSeven years had softened the memory of this coastline, but stepping onto the worn travertine steps made the distance vanish in a single breath. The evening sky was a bruised plum and apricot, melting into the sapphire Mediterranean.\n\nAnd then he looked up toward the terracotta roofline of Villa Serenita, high on the limestone bluffs, and saw the linen curtains shifting in the evening wind. Elena was still there. He had spent seven years running from this cliffside, only to realize his heart had never boarded the outbound train.'
-      },
-      {
-        id: 'chap-ss-2',
-        storyId: 'story-summer-stayed',
-        number: 2,
-        title: 'Travertine and Sea Glass',
-        durationSeconds: 225,
-        publishedAt: 'Oct 19',
-        isPremium: false,
-        wordCount: 480,
-        synopsis: 'An unexpected encounter at the olive grove uncovers years of unasked questions.',
-        proseExcerpt:
-          'Elena had never been good at leaving things half-done. Her hands were smudged with dry earth and wild thyme when the iron gate creaked open. It was a rhythm she knew by heart—two heavy scrapes, then a rhythmic thud against the bougainvillea trellis.\n\nWhen she looked up, she did not drop the ceramic bowl in her hands; she simply stopped breathing. Julian stood beneath the olive canopy, the slant of Mediterranean dusk catching the slight silver at his temples.\n\n"You didn\'t tell anyone you were coming," she said, her voice softer than she intended, trembling on the edge of memory.\n\nJulian took off his coat, laying it over the dry stone wall. "If I had written first, Elena, you would have found a reason to be in Florence."'
-      },
-      {
-        id: 'chap-ss-3',
-        storyId: 'story-summer-stayed',
-        number: 3,
-        title: 'Unanswered Correspondence',
-        durationSeconds: 235,
-        publishedAt: 'Oct 21',
-        isPremium: true,
-        wordCount: 495,
-        synopsis: 'A rainstorm traps them together inside the stone carriage house.',
-        proseExcerpt:
-          'The squall arrived without preamble from the Gulf of Salerno. Within minutes, torrential rain beat against the arched glass doors of the old carriage house. The damp air carried the scent of wet pine and aged cedar drawers.\n\nJulian set down his brass lamp on the potting bench, watching the candlelight play across Elena’s jawline. She was wringing rainwater from the hem of her linen skirt, her chest rising and falling with shallow breaths.\n\n"I wrote thirty-two letters," he said quietly, the sound barely rising above the thunder. "Every month from London, every winter from Vienna."\n\nElena paused, her hands stilling against the wet cloth. She met his gaze with fierce, wounded clarity. "I didn\'t throw away a single one. That’s what hurt the most."'
-      },
-      {
-        id: 'chap-ss-4',
-        storyId: 'story-summer-stayed',
-        number: 4,
-        title: 'The Blue Hour Promise',
-        durationSeconds: 215,
-        publishedAt: 'Oct 23',
-        isPremium: true,
-        wordCount: 470,
-        synopsis: 'Walking along the cliff path at midnight, words they held back come to the surface.',
-        proseExcerpt:
-          'The midnight path above the cove was narrow and slick with sea spray. Julian extended a hand, and when Elena took it, neither let go. The Mediterranean was a sheet of obsidian beneath them, reflecting nothing but the quiet constellations of a summer that refused to remain in the past.\n\n"We were too young then," she said softly, leaning into the warmth of his shoulder against the cliff wind.\n\n"We were frightened," Julian corrected, his fingers interlacing with hers. "I thought building a career meant leaving my heart behind. Now I know the only home I ever cared about was right here."'
-      }
-    ]
+      createChapter(
+        'chap-ss-1',
+        'story-summer-stayed',
+        1,
+        'The Sound of the Tide at Dusk',
+        210,
+        'Oct 18',
+        false,
+        'Julian arrives by ferry at the Amalfi harbor as the sun dips below the terrace.',
+        'The ferry engine sputtered into silence just as the bells of Santa Maria Assunta struck seven. Salt air hit Julian before the harbor did—sharp, briny, and steeped in lemons warming on stone terraces. He adjusted the leather strap of his drafting satchel, his fingers brushing the creased corner of an envelope he had carried across four borders.\n\nSeven years had softened the memory of this coastline, but stepping onto the worn travertine steps made the distance vanish in a single breath. The evening sky was a bruised plum and apricot, melting into the sapphire Mediterranean.\n\nAnd then he looked up toward the terracotta roofline of Villa Serenita, high on the limestone bluffs, and saw the linen curtains shifting in the evening wind. Elena was still there. He had spent seven years running from this cliffside, only to realize his heart had never boarded the outbound train.'
+      ),
+      createChapter(
+        'chap-ss-2',
+        'story-summer-stayed',
+        2,
+        'Travertine and Sea Glass',
+        225,
+        'Oct 19',
+        false,
+        'An unexpected encounter at the olive grove uncovers years of unasked questions.',
+        'Elena had never been good at leaving things half-done. Her hands were smudged with dry earth and wild thyme when the iron gate creaked open. It was a rhythm she knew by heart—two heavy scrapes, then a rhythmic thud against the bougainvillea trellis.\n\nWhen she looked up, she did not drop the ceramic bowl in her hands; she simply stopped breathing. Julian stood beneath the olive canopy, the slant of Mediterranean dusk catching the slight silver at his temples.\n\n"You didn\'t tell anyone you were coming," she said, her voice softer than she intended, trembling on the edge of memory.\n\nJulian took off his coat, laying it over the dry stone wall. "If I had written first, Elena, you would have found a reason to be in Florence."'
+      ),
+      createChapter(
+        'chap-ss-3',
+        'story-summer-stayed',
+        3,
+        'Unanswered Correspondence',
+        235,
+        'Oct 21',
+        false,
+        'A rainstorm traps them together inside the stone carriage house.',
+        'The squall arrived without preamble from the Gulf of Salerno. Within minutes, torrential rain beat against the arched glass doors of the old carriage house. The damp air carried the scent of wet pine and aged cedar drawers.\n\nJulian set down his brass lamp on the potting bench, watching the candlelight play across Elena’s jawline. She was wringing rainwater from the hem of her linen skirt, her chest rising and falling with shallow breaths.\n\n"I wrote thirty-two letters," he said quietly, the sound barely rising above the thunder. "Every month from London, every winter from Vienna."\n\nElena paused, her hands stilling against the wet cloth. She met his gaze with fierce, wounded clarity. "I didn\'t throw away a single one. That’s what hurt the most."'
+      ),
+      createChapter(
+        'chap-ss-4',
+        'story-summer-stayed',
+        4,
+        'The Blue Hour Promise',
+        215,
+        'Oct 23',
+        false,
+        'Walking along the cliff path at midnight, words they held back come to the surface.',
+        'The midnight path above the cove was narrow and slick with sea spray. Julian extended a hand, and when Elena took it, neither let go. The Mediterranean was a sheet of obsidian beneath them, reflecting nothing but the quiet constellations of a summer that refused to remain in the past.\n\n"We were too young then," she said softly, leaning into the warmth of his shoulder against the cliff wind.\n\n"We were frightened," Julian corrected, his fingers interlacing with hers. "I thought building a career meant leaving my heart behind. Now I know the only home I ever cared about was right here."'
+      ),
+      createChapter(
+        'chap-ss-5',
+        'story-summer-stayed',
+        5,
+        'The Harbor Lanterns at Midnight',
+        240,
+        'Oct 24',
+        false,
+        'Julian and Elena share a quiet confession beneath the amber lanterns of the harbor dock.',
+        'Midnight arrived in Positano with a soft offshore breeze that smelled of wild rosemary and cool salt spray. Julian leaned against the weathered cypress railing of the pier, watching the reflection of the golden harbor lanterns stretch across the black water. When footsteps clicked softly on the travertine flagstones behind him, he didn’t need to turn to know she had come.\n\n"You should be asleep," Elena murmured, pulling her cream wool shawl closer around her shoulders. Her dark hair was undone, spilling in loose waves over the lapel of her coat.\n\n"I tried," Julian admitted, turning toward her. The lamplight caught the amber flecks in her eyes, eyes that had haunted his sketchbooks across three continents. "Every time I closed my eyes, I kept hearing the bells of Santa Maria Assunta, and the sound of your voice asking why I waited so long to come back."\n\nElena took a step closer, close enough that he could catch the familiar scent of orange blossom that had always belonged to her. "And what answer did you find in the dark, Julian?"\n\n"That I was terrified," he said, his voice dropping to a raw whisper that barely carried above the lap of the tide. "Terrified that if I returned, you would look at me like a stranger. But seeing you tonight... I realize that leaving was the only mistake I ever truly made."'
+      ),
+      createChapter(
+        'chap-ss-6',
+        'story-summer-stayed',
+        6,
+        'Lemon Groves in the Morning',
+        220,
+        'Oct 24',
+        false,
+        'Morning light brings shared breakfast and renewed laughter on the terrace.',
+        'Morning broke with brilliant clarity over the Gulf of Salerno. The smell of fresh espresso mingled with crushed lemon verbena as Elena set two cups on the stone terrace table.\n\nJulian was already sketching, charcoal smudges dusting his knuckles. When she leaned over his shoulder, she saw he wasn’t drawing the architecture of the villa—he was drawing the line of her profile as she stood by the cypress tree.\n\n"You haven’t changed your habit of working before breakfast," Elena smiled, taking a sip from her cup.\n\n"And you haven’t lost your habit of making enough coffee for two," Julian countered, reaching for her hand across the wooden table.'
+      ),
+      createChapter(
+        'chap-ss-7',
+        'story-summer-stayed',
+        7,
+        'The Drafting Table Confession',
+        230,
+        'Oct 25',
+        false,
+        'A blueprint review turns into an intimate moment in the villa library.',
+        'Rolls of drafting vellum were spread across the wide walnut table in the villa’s high-ceilinged study. The afternoon sun filtered through wooden shutters, throwing bars of amber light across Elena’s hair.\n\nAs Julian leaned over to indicate the support columns on the terrace blueprint, his shoulder brushed hers. The room fell into sudden, electric stillness.\n\n"Julian," Elena whispered, her eyes searching his.\n\n"I came back for you, Elena," Julian said softly. "The restoration was just the excuse my pride needed."'
+      ),
+      createChapter(
+        'chap-ss-8',
+        'story-summer-stayed',
+        8,
+        'A Night on the Sea Clifftops',
+        225,
+        'Oct 25',
+        false,
+        'Walking up the steep path under shooting stars rekindles their deepest vows.',
+        'The stone steps wound high above the sea, where the scent of night-blooming jasmine was thick in the warm sea air. Julian kept his arm around Elena’s waist, supporting her footing over the rough limestone.\n\nAbove them, a shooting star streaked green and gold across the indigo Mediterranean sky.\n\n"Did you make a wish?" Elena asked, looking up at him.\n\n"I don’t need to wish anymore," Julian replied, pulling her closer against the breeze. "Everything I ever wanted is standing right here in my arms."'
+      ),
+      createChapter(
+        'chap-ss-9',
+        'story-summer-stayed',
+        9,
+        'Shadows of the Past',
+        235,
+        'Oct 25',
+        false,
+        'A letter from Julian’s London firm forces them to confront what happens when the project ends.',
+        'The morning mail brought an envelope with the embossed crest of Julian’s architectural firm in London. The partners were demanding his return to oversee the Thames redevelopment project.\n\nElena held the paper in silence, her fingers trembling slightly. "So the summer ends in October after all," she said, looking toward the open sea.\n\nJulian took the letter from her hands, folding it and setting it aside without hesitation. "I built buildings for seven years, Elena. Now I want to build a life. And my life is here."'
+      ),
+      createChapter(
+        'chap-ss-10',
+        'story-summer-stayed',
+        10,
+        'The Vow at the Belvedere',
+        240,
+        'Oct 25',
+        false,
+        'FREE MILESTONE: Julian and Elena stand at the high belvedere overlook and declare their everlasting love.',
+        'High on the belvedere overlooking Positano, the church bells tolled five in the afternoon. The town cascaded down the cliffs like a tumbling waterfall of pink and ochre villas.\n\nJulian stood with Elena beneath the wisteria pergola, his hands framing her face. "Chapters of doubt are behind us, Elena. I’m not getting back on that ferry."\n\nElena threw her arms around his neck, burying her face against his collar as joyful tears touched her eyelashes. "Then stay, Julian. Stay for every summer to come."'
+      ),
+      createChapter(
+        'chap-ss-11',
+        'story-summer-stayed',
+        11,
+        'Storms Over Capri',
+        250,
+        'Today (Oct 25)',
+        true,
+        'PREMIUM VIP CHAPTER: An unexpected arrival at the marina tests Julian and Elena’s newly declared commitment.',
+        'The dark clouds gathering over the silhouette of Capri heralded an early autumn storm. At the marina dock, a yacht bearing the London imprint arrived, bringing Julian’s former business partner with an ultimatum that would test every promise made on the cliffside.\n\nJulian stood on the wet dock, Elena’s hand clasped tightly in his. The battle for their future was only just beginning.'
+      ),
+    ],
   },
   {
     id: 'story-contract-winter',
@@ -106,7 +794,7 @@ export const SAMPLE_STORIES: Story[] = [
     },
     coverImage: BOOK_COVERS.contractWinter,
     synopsis:
-      'To secure her family’s historic publishing imprint, independent editor Gemma agrees to a six-month sham engagement with venture financier Marcus Sterling. But high above a snowbound Manhattan, the boundary between calculated clauses and fierce devotion begins to blur.',
+      'To secure her family’s historic publishing imprint, independent editor Gemma agrees to a six-month sham engagement with venture financier Marcus Sterling. High above a snowbound Manhattan, the boundary between calculated clauses and fierce devotion begins to blur. Chapters 1–10 are free to read and listen!',
     genre: 'Billionaire',
     tropes: ['Billionaire Romance', 'Enemies to Lovers', 'Workplace Romance'],
     status: 'Ongoing',
@@ -117,59 +805,128 @@ export const SAMPLE_STORIES: Story[] = [
     releasedAt: '2026-08-01',
     updatedAt: '2026-10-25',
     chapters: [
-      {
-        id: 'chap-cw-4',
-        storyId: 'story-contract-winter',
-        number: 4,
-        title: 'Whispers in the Snow',
-        durationSeconds: 245,
-        publishedAt: 'Today (Oct 25)',
-        isPremium: true,
-        wordCount: 510,
-        synopsis: 'NEW TODAY: Trapped in Marcus’s private study as the blizzard intensifies, the contract rules are tested.',
-        proseExcerpt:
-          'The blizzard howled outside the penthouse, painting the Manhattan skyline into a white abstraction. Inside Marcus’s walnut-paneled library, only the crackle of birch logs in the hearth broke the heavy silence.\n\nGemma sat curled in the leather armchair, reviewing the redlined clauses of their agreement. Marcus stood by the bar, slowly unknotting his charcoal silk tie. He poured two glasses of twenty-year bourbon and walked over, handing one to her.\n\n"You missed a detail in Subsection B," he remarked, his voice low and smoky.\n\nGemma looked up, her heart taking an unruly jump against her ribs. "I drafted Subsection B myself, Mr. Sterling. It clearly dictates no public displays of affection when third parties are absent."\n\nMarcus set his glass on the marble side table and placed both hands on the arms of her chair, leaning down until she could feel the heat radiating from his collar. "Then tell me, Gemma... why haven\'t either of us moved away in the last twenty minutes?"'
-      },
-      {
-        id: 'chap-cw-1',
-        storyId: 'story-contract-winter',
-        number: 1,
-        title: 'The Sixty-Fifth Floor',
-        durationSeconds: 210,
-        publishedAt: 'Oct 20',
-        isPremium: false,
-        wordCount: 450,
-        synopsis: 'Gemma arrives at Sterling Tower during the first blizzard of December.',
-        proseExcerpt:
-          'Snow flurried in dizzying white spirals against the floor-to-ceiling glass of the sixty-fifth floor. Below, Central Park was disappearing under a pristine shroud of white, but inside Marcus Sterling’s corner office, the silence was absolute.\n\nMarcus did not stand when she entered. He simply pushed a heavy linen-bound folder across the black marble table. "Section 4 outlines public appearances," he said, his baritone smooth and unyielding. "Section 7 specifies privacy. Read them carefully, Miss Hayes."\n\nGemma pulled off her leather gloves, refusing to show the tremor in her fingers. "I know the terms, Marcus. I just need to know if you intend to play by them."'
-      },
-      {
-        id: 'chap-cw-2',
-        storyId: 'story-contract-winter',
-        number: 2,
-        title: 'Terms of Engagement',
-        durationSeconds: 220,
-        publishedAt: 'Oct 22',
-        isPremium: true,
-        wordCount: 460,
-        synopsis: 'A winter gala introduces the couple to New York high society.',
-        proseExcerpt:
-          'The emerald velvet gown was heavy and slid against her skin like cold water. When Marcus reached down to adjust the vintage diamond pendant resting at the hollow of her collarbone, his fingertips brushed her skin.\n\nA quiet shiver ran through her that had nothing to do with the winter air. "Remember," he whispered against her ear, smiling for the cameras across the ballroom, "we are supposed to be desperately in love."\n\n"You’re playing the part a little too well," Gemma countered under her breath, tilting her head to meet his intoxicating gaze.'
-      },
-      {
-        id: 'chap-cw-3',
-        storyId: 'story-contract-winter',
-        number: 3,
-        title: 'A Snowbound Evening',
-        durationSeconds: 230,
-        publishedAt: 'Oct 24',
-        isPremium: true,
-        wordCount: 480,
-        synopsis: 'A citywide transit shutdown leaves them alone in the penthouse.',
-        proseExcerpt:
-          'The fire crackled in the hearth, casting long amber shadows across the parquet floor. Outside, Manhattan had gone utterly quiet under two feet of snow. Marcus leaned against the kitchen island, holding two glasses of single malt.\n\nFor the first time since they signed the parchment, he wasn’t wearing his tie, his sleeves rolled to his forearms. "You were right about the third clause," he admitted softly.\n\n"Which one?" Gemma asked, surprised.\n\n"The clause where you said we couldn\'t spend nights like this without risking everything."'
-      }
-    ]
+      createChapter(
+        'chap-cw-1',
+        'story-contract-winter',
+        1,
+        'The Sixty-Fifth Floor',
+        210,
+        'Oct 20',
+        false,
+        'Gemma arrives at Sterling Tower during the first blizzard of December.',
+        'Snow flurried in dizzying white spirals against the floor-to-ceiling glass of the sixty-fifth floor. Below, Central Park was disappearing under a pristine shroud of white, but inside Marcus Sterling’s corner office, the silence was absolute.\n\nMarcus did not stand when she entered. He simply pushed a heavy linen-bound folder across the black marble table. "Section 4 outlines public appearances," he said, his baritone smooth and unyielding. "Section 7 specifies privacy. Read them carefully, Miss Hayes."\n\nGemma pulled off her leather gloves, refusing to show the tremor in her fingers. "I know the terms, Marcus. I just need to know if you intend to play by them."'
+      ),
+      createChapter(
+        'chap-cw-2',
+        'story-contract-winter',
+        2,
+        'Terms of Engagement',
+        220,
+        'Oct 22',
+        false,
+        'A winter gala introduces the couple to New York high society.',
+        'The emerald velvet gown was heavy and slid against her skin like cold water. When Marcus reached down to adjust the vintage diamond pendant resting at the hollow of her collarbone, his fingertips brushed her skin.\n\nA quiet shiver ran through her that had nothing to do with the winter air. "Remember," he whispered against her ear, smiling for the cameras across the ballroom, "we are supposed to be desperately in love."\n\n"You’re playing the part a little too well," Gemma countered under her breath, tilting her head to meet his intoxicating gaze.'
+      ),
+      createChapter(
+        'chap-cw-3',
+        'story-contract-winter',
+        3,
+        'A Snowbound Evening',
+        230,
+        'Oct 24',
+        false,
+        'A citywide transit shutdown leaves them alone in the penthouse.',
+        'The fire crackled in the hearth, casting long amber shadows across the parquet floor. Outside, Manhattan had gone utterly quiet under two feet of snow. Marcus leaned against the kitchen island, holding two glasses of single malt.\n\nFor the first time since they signed the parchment, he wasn’t wearing his tie, his sleeves rolled to his forearms. "You were right about the third clause," he admitted softly.\n\n"Which one?" Gemma asked, surprised.\n\n"The clause where you said we couldn\'t spend nights like this without risking everything."'
+      ),
+      createChapter(
+        'chap-cw-4',
+        'story-contract-winter',
+        4,
+        'Whispers in the Snow',
+        245,
+        'Oct 24',
+        false,
+        'Trapped in Marcus’s private study as the blizzard intensifies, the contract rules are tested.',
+        'The blizzard howled outside the penthouse, painting the Manhattan skyline into a white abstraction. Inside Marcus’s walnut-paneled library, only the crackle of birch logs in the hearth broke the heavy silence.\n\nGemma sat curled in the leather armchair, reviewing the redlined clauses of their agreement. Marcus stood by the bar, slowly unknotting his charcoal silk tie. He poured two glasses of twenty-year bourbon and walked over, handing one to her.\n\n"You missed a detail in Subsection B," he remarked, his voice low and smoky.\n\nGemma looked up, her heart taking an unruly jump against her ribs. "I drafted Subsection B myself, Mr. Sterling. It clearly dictates no public displays of affection when third parties are absent."\n\nMarcus set his glass on the marble side table and placed both hands on the arms of her chair, leaning down until she could feel the heat radiating from his collar. "Then tell me, Gemma... why haven\'t either of us moved away in the last twenty minutes?"'
+      ),
+      createChapter(
+        'chap-cw-5',
+        'story-contract-winter',
+        5,
+        'Breakfast Over the Skyline',
+        220,
+        'Oct 24',
+        false,
+        'Morning light brings vulnerability over hot coffee in the glass atrium.',
+        'Morning light bathed the penthouse in cool silver tones. Marcus brought a tray with steaming black coffee and warm croissants into the glass sunroom.\n\nGemma was wrapped in an oversized cashmere robe, looking out over the frozen park. "People will start asking questions about the wedding date on Monday."\n\nMarcus placed his cup down and sat opposite her, his expression unusually gentle. "Let them ask, Gemma. For once in my life, I don’t care about the board\'s opinion."'
+      ),
+      createChapter(
+        'chap-cw-6',
+        'story-contract-winter',
+        6,
+        'The Charity Auction',
+        225,
+        'Oct 24',
+        false,
+        'A high-stakes bidding war over an antique book reveals Marcus’s true loyalties.',
+        'The ballroom of the Metropolitan Club was ablaze with chandeliers. When Gemma’s family edition of Dickens went to auction, rival bidders pushed the price into six figures.\n\nWithout a blink, Marcus raised his paddle. "Two hundred and fifty thousand," his voice rang across the silent hall.\n\nGemma gripped his wrist under the linen tablecloth. "Marcus, you didn’t have to do that."\n\n"I protect what belongs to you, Gemma," he whispered, his eyes dark with fierce conviction.'
+      ),
+      createChapter(
+        'chap-cw-7',
+        'story-contract-winter',
+        7,
+        'Unspoken Lines',
+        230,
+        'Oct 25',
+        false,
+        'Working late in the editorial archives, an intimate revelation comes forward.',
+        'Late night at Hayes Publishing, the smell of aged paper and leather bindings filled the silence. Marcus helped her shelve archive manuscripts on the rolling ladder.\n\nWhen the ladder swayed, he caught her easily, bringing her down against his chest. For three heartbeats neither breathed.\n\n"Tell me to stop, Gemma," he murmured against her lips.\n\n"I can’t," she breathed, her fingers tangling in the hair at the nape of his neck.'
+      ),
+      createChapter(
+        'chap-cw-8',
+        'story-contract-winter',
+        8,
+        'The Hamptons Retreat',
+        235,
+        'Oct 25',
+        false,
+        'A weekend getaway by the frozen ocean strips away corporate pretenses.',
+        'The winter ocean at Montauk was wild and slate grey. Wrapped in wool coats, Marcus and Gemma walked along the deserted sand, listening to the roar of the surf.\n\n"My father only loved people who could be traded on an exchange," Marcus said quietly, sharing a piece of his childhood he had never spoken aloud.\n\nGemma slipped her gloved hand into his. "You are not your father, Marcus. You have the biggest heart of anyone I know."'
+      ),
+      createChapter(
+        'chap-cw-9',
+        'story-contract-winter',
+        9,
+        'Breach of Contract',
+        240,
+        'Oct 25',
+        false,
+        'A leaked memo threatens to expose their agreement, testing their trust.',
+        'Headlines hit the financial papers at six in the morning: Sterling Engagement Questioned by Rival Shareholder.\n\nGemma arrived at the office expecting Marcus to terminate the arrangement. Instead, she found him standing before a podium of reporters, a microphone in his hand.\n\n"I did not propose to Gemma Hayes for business," Marcus declared into the cameras. "I proposed because I love her."'
+      ),
+      createChapter(
+        'chap-cw-10',
+        'story-contract-winter',
+        10,
+        'The True Clause',
+        245,
+        'Oct 25',
+        false,
+        'FREE MILESTONE: The contract is torn up, replaced by genuine passion and an authentic engagement ring.',
+        'Back in the sixty-fifth floor library, Marcus laid the linen contract on the coffee table. He picked up the lighter and touched the flame to the corner of the parchment, watching the legal clauses curl into black ash.\n\nFrom his jacket, he produced a vintage sapphire box, kneeling before her chair.\n\n"No clauses. No expiration date. Will you marry me for real, Gemma?"\n\nWith tears shining in her eyes, Gemma pulled him up and into a deep, breathless kiss. "Yes, Marcus. Forever yes."'
+      ),
+      createChapter(
+        'chap-cw-11',
+        'story-contract-winter',
+        11,
+        'A Winter Wedding in Venice',
+        255,
+        'Today (Oct 25)',
+        true,
+        'PREMIUM VIP CHAPTER: Planning an authentic wedding in Venice brings family secrets and high stakes back to the surface.',
+        'Gemma and Marcus arrive at the Grand Canal under a crisp winter dawn. As the gondolas bob against the painted wooden poles, an anonymous envelope arrives at the Gritti Palace, testing their new vow.'
+      ),
+    ],
   },
   {
     id: 'story-things-never-said',
@@ -184,7 +941,7 @@ export const SAMPLE_STORIES: Story[] = [
     },
     coverImage: BOOK_COVERS.neverSaid,
     synopsis:
-      'Working late shifts inside London’s Victorian botanical conservatory, archivist Mira and landscape restorer Callum maintain an unspoken covenant: stay colleagues, protect their fragile friendship. But when an uncataloged collection of Edwardian love letters arrives, their quiet restraint begins to crack.',
+      'Working late shifts inside London’s Victorian botanical conservatory, archivist Mira and landscape restorer Callum maintain an unspoken covenant: stay colleagues, protect their fragile friendship. When an uncataloged collection of Edwardian love letters arrives, their quiet restraint begins to crack. Chapters 1–10 are free to read and listen!',
     genre: 'Friends to Lovers',
     tropes: ['Friends to Lovers', 'Slow Burn', 'Workplace Romance'],
     status: 'Ongoing',
@@ -195,98 +952,40 @@ export const SAMPLE_STORIES: Story[] = [
     releasedAt: '2026-09-01',
     updatedAt: '2026-10-25',
     chapters: [
-      {
-        id: 'chap-tns-3',
-        storyId: 'story-things-never-said',
-        number: 3,
-        title: 'The Forgotten Rose Garden',
-        durationSeconds: 230,
-        publishedAt: 'Today (Oct 25)',
-        isPremium: true,
-        wordCount: 490,
-        synopsis: 'NEW TODAY: Discovering a secret hidden glasshouse behind the camellias brings an unspoken truth into the light.',
-        proseExcerpt:
-          'Behind the overgrown camellia wall stood an arched iron doorway that hadn’t been opened in seventy years. Callum wiped the verdigris from the skeleton key and turned it with a satisfying click that echoed through the misty palm house.\n\nMira stepped inside behind him. The air was warm, dense with the heady scent of antique damask roses that bloomed even in the heart of autumn. Above them, raindrops tapped a quiet rhythm on the curved glass dome.\n\n"Callum, look," she breathed, illuminating a stone sundial carved with the inscription: What the heart refuses to speak, the years will tell.\n\nCallum turned, looking down at her in the soft lantern glow. He reached out, his thumb gently smoothing away a stray curl that had fallen across her cheek. "I don\'t want the years to tell it, Mira. I want to tell you myself."'
-      },
-      {
-        id: 'chap-tns-1',
-        storyId: 'story-things-never-said',
-        number: 1,
-        title: 'The Glass Conservatory at Twilight',
-        durationSeconds: 200,
-        publishedAt: 'Oct 15',
-        isPremium: false,
-        wordCount: 430,
-        synopsis: 'Rain falls against the soaring glass domes of Kew as Mira and Callum catalog the evening blooms.',
-        proseExcerpt:
-          'The humidity under the wrought iron vaults was fragrant with damp soil, flowering jasmine, and the petrichor of London rain beating against four thousand panes of leaded glass.\n\nCallum was kneeling by the rose arbor, pruning shears in hand, when Mira walked down the brick path holding two steaming mugs of Earl Grey.\n\n"You’re working past closing again," she said, leaning against the damp brickwork.\n\nHe looked up, a slow smile touching his lips. "Only because I knew you wouldn’t leave either."'
-      },
-      {
-        id: 'chap-tns-2',
-        storyId: 'story-things-never-said',
-        number: 2,
-        title: 'Ink and Dried Petals',
-        durationSeconds: 215,
-        publishedAt: 'Oct 22',
-        isPremium: true,
-        wordCount: 450,
-        synopsis: 'Unboxing an old cedar chest uncovers letters that reflect their own unexpressed feelings.',
-        proseExcerpt:
-          'Between the brittle pages of an 1894 diary lay a pressed violet. Mira read the faded script aloud: "To love someone in silence is both a sanctuary and an unbearable cage."\n\nCallum paused in his work, the silence between them stretching until every drop of rain on the glass sounded like a heartbeat.\n\n"Do you believe that?" he asked softly, his gaze pinned to hers. "That silence is a sanctuary?"'
-      }
-    ]
-  },
-  {
-    id: 'story-rosewood-train',
-    title: 'The Last Train to Rosewood',
-    author: 'Eleanor Reed',
-    narrator: {
-      id: 'narrator-clara',
-      name: 'Eleanor Sterling',
-      accent: 'British',
-      tone: 'Intimate, warm, evocative',
-      gender: 'female',
-    },
-    coverImage: BOOK_COVERS.rosewoodTrain,
-    synopsis:
-      'Stranded on a delayed sleeper train cutting through the misty Oregon pines, botanical researcher Laurel finds herself seated across from Owen—the high school sweetheart who left town without saying goodbye ten years ago. As the engine winds deeper into the mountains, ten years of silence dissolve.',
-    genre: 'Second Chance',
-    tropes: ['Second Chance', 'Small Town Romance', 'Enemies to Lovers'],
-    status: 'Completed',
-    totalPlannedChapters: 45,
-    publishedChaptersCount: 45,
-    totalDurationSeconds: 9800,
-    isFeatured: false,
-    releasedAt: '2026-05-10',
-    updatedAt: '2026-09-30',
-    chapters: [
-      {
-        id: 'chap-rt-1',
-        storyId: 'story-rosewood-train',
-        number: 1,
-        title: 'Carriage Number Seven',
-        durationSeconds: 210,
-        publishedAt: 'Sep 15',
-        isPremium: false,
-        wordCount: 440,
-        synopsis: 'The whistle blows at dusk as Laurel takes her seat in the vintage wood-paneled car.',
-        proseExcerpt:
-          'Rain streaked diagonally across the double-paned window of Carriage Number Seven. Laurel slid her wool knit scarf onto the brass luggage rack above, exhaling a cloud of steam into the chilled air of the vestibule.\n\nWhen the compartment door slid open, the man entering did not immediately notice her. He had the same broad shoulders, the same slight furrow between his dark brows, but his eyes were weary.\n\n"Laurel?" Owen said, his hand freezing on the brass latch. "Of all the trains in the Pacific Northwest..."'
-      },
-      {
-        id: 'chap-rt-2',
-        storyId: 'story-rosewood-train',
-        number: 2,
-        title: 'Miles Through the Pines',
-        durationSeconds: 225,
-        publishedAt: 'Sep 20',
-        isPremium: true,
-        wordCount: 470,
-        synopsis: 'As the train climbs the mountain pass, old wounds and unresolved tenderness re-emerge.',
-        proseExcerpt:
-          'The rhythmic click-clack of the steel rails seemed to count off the years they had wasted. In the dining car, the amber lamp cast a warm halo over their table.\n\n"You never answered my message after graduation," Laurel said evenly, looking straight into his eyes.\n\nOwen looked down at his coffee, then reached across the table to touch her fingers. "I was terrified I wasn\'t enough for you, Laurel. Leaving you is the only thing I\'ve regretted every single day since."'
-      }
-    ]
+      createChapter(
+        'chap-tns-1',
+        'story-things-never-said',
+        1,
+        'The Glass Conservatory at Twilight',
+        200,
+        'Oct 15',
+        false,
+        'Rain falls against the soaring glass domes of Kew as Mira and Callum catalog the evening blooms.',
+        'The humidity under the wrought iron vaults was fragrant with damp soil, flowering jasmine, and the petrichor of London rain beating against four thousand panes of leaded glass.\n\nCallum was kneeling by the rose arbor, pruning shears in hand, when Mira walked down the brick path holding two steaming mugs of Earl Grey.\n\n"You’re working past closing again," she said, leaning against the damp brickwork.\n\nHe looked up, a slow smile touching his lips. "Only because I knew you wouldn’t leave either."'
+      ),
+      createChapter(
+        'chap-tns-2',
+        'story-things-never-said',
+        2,
+        'Ink and Dried Petals',
+        215,
+        'Oct 22',
+        false,
+        'Unboxing an old cedar chest uncovers letters that reflect their own unexpressed feelings.',
+        'Between the brittle pages of an 1894 diary lay a pressed violet. Mira read the faded script aloud: "To love someone in silence is both a sanctuary and an unbearable cage."\n\nCallum paused in his work, the silence between them stretching until every drop of rain on the glass sounded like a heartbeat.\n\n"Do you believe that?" he asked softly, his gaze pinned to hers. "That silence is a sanctuary?"'
+      ),
+      createChapter(
+        'chap-tns-3',
+        'story-things-never-said',
+        3,
+        'The Forgotten Rose Garden',
+        230,
+        'Oct 25',
+        false,
+        'Discovering a secret hidden glasshouse behind the camellias brings an unspoken truth into the light.',
+        'Behind the overgrown camellia wall stood an arched iron doorway that hadn’t been opened in seventy years. Callum wiped the verdigris from the skeleton key and turned it with a satisfying click that echoed through the misty palm house.\n\nMira stepped inside behind him. The air was warm, dense with the heady scent of antique damask roses that bloomed even in the heart of autumn. Above them, raindrops tapped a quiet rhythm on the curved glass dome.\n\n"Callum, look," she breathed, illuminating a stone sundial carved with the inscription: What the heart refuses to speak, the years will tell.\n\nCallum turned, looking down at her in the soft lantern glow. He reached out, his thumb gently smoothing away a stray curl that had fallen across her cheek. "I don\'t want the years to tell it, Mira. I want to tell you myself."'
+      ),
+    ],
   },
   {
     id: 'story-cliffside-vows',
@@ -301,7 +1000,7 @@ export const SAMPLE_STORIES: Story[] = [
     },
     coverImage: BOOK_COVERS.cliffsideVows,
     synopsis:
-      'On the windswept headlands of Cornwall, an estranged couple agrees to spend a final fortnight together to settle an ancestral cottage deed. High above crashing waves and heather-covered cliffs, unresolved passion proves stronger than any legal decree.',
+      'On the windswept headlands of Cornwall, an estranged couple agrees to spend a final fortnight together to settle an ancestral cottage deed. High above crashing waves and heather-covered cliffs, unresolved passion proves stronger than any legal decree. Chapters 1–10 are free to read and listen!',
     genre: 'Contemporary',
     tropes: ['Second Chance', 'Slow Burn', 'Small Town Romance'],
     status: 'Ongoing',
@@ -312,106 +1011,103 @@ export const SAMPLE_STORIES: Story[] = [
     releasedAt: '2026-07-20',
     updatedAt: '2026-10-24',
     chapters: [
-      {
-        id: 'chap-cv-1',
-        storyId: 'story-cliffside-vows',
-        number: 1,
-        title: 'Salt Air and Granite',
-        durationSeconds: 215,
-        publishedAt: 'Oct 12',
-        isPremium: false,
-        wordCount: 450,
-        synopsis: 'Arrival at the windswept cottage perched above St. Agnes Head.',
-        proseExcerpt:
-          'The wind came straight off the Atlantic, wild and smelling of cold brine and crushed gorse. Tristan held open the weathered oak door of Penrose Cottage, waiting as Siobhan stepped over the threshold.\n\nFor five years, they had communicated only through solicitors. Now, standing beneath the low-beamed ceiling as gale-force gusts rattled the leaded casements, the polite distance between them began to crack.\n\n"You kept the fireplace ready," she observed quietly.\n\n"I always kept it ready," Tristan replied, shutting the storm door behind them.'
-      },
-      {
-        id: 'chap-cv-2',
-        storyId: 'story-cliffside-vows',
-        number: 2,
-        title: 'The Keeper\'s Lantern',
-        durationSeconds: 230,
-        publishedAt: 'Oct 18',
-        isPremium: true,
-        wordCount: 480,
-        synopsis: 'A night-time walk to the decommissioned lighthouse brings back memories of their wedding night.',
-        proseExcerpt:
-          'The beam of his flashlight illuminated the damp granite path. When her boot slipped on the wet slate, Tristan caught her waist with both hands, pulling her against his chest before he could stop himself.\n\nIn the dark, his breath was warm against her hair. "You haven\'t changed your perfume," he whispered.\n\nSiobhan felt the steady drum of his heart beneath his wool sweater. "And you still hold on too tightly."'
-      }
-    ]
-  }
+      createChapter(
+        'chap-cv-1',
+        'story-cliffside-vows',
+        1,
+        'Salt Air and Granite',
+        215,
+        'Oct 12',
+        false,
+        'Arrival at the windswept cottage perched above St. Agnes Head.',
+        'The wind came straight off the Atlantic, wild and smelling of cold brine and crushed gorse. Tristan held open the weathered oak door of Penrose Cottage, waiting as Siobhan stepped over the threshold.\n\nFor five years, they had communicated only through solicitors. Now, standing beneath the low-beamed ceiling as gale-force gusts rattled the leaded casements, the polite distance between them began to crack.\n\n"You kept the fireplace ready," she observed quietly.\n\n"I always kept it ready," Tristan replied, shutting the storm door behind them.'
+      ),
+      createChapter(
+        'chap-cv-2',
+        'story-cliffside-vows',
+        2,
+        'The Keeper\'s Lantern',
+        230,
+        'Oct 18',
+        false,
+        'A night-time walk to the decommissioned lighthouse brings back memories of their wedding night.',
+        'The beam of his flashlight illuminated the damp granite path. When her boot slipped on the wet slate, Tristan caught her waist with both hands, pulling her against his chest before he could stop himself.\n\nIn the dark, his breath was warm against her hair. "You haven\'t changed your perfume," he whispered.\n\nSiobhan felt the steady drum of his heart beneath his wool sweater. "And you still hold on too tightly."'
+      ),
+    ],
+  },
 ];
 
 export const BROWSE_MOODS = [
+  { id: 'Mystery', name: 'Mystery & Suspense', count: 10, description: 'Ciphers, Gothic estates, and thrilling truths' },
   { id: 'Slow Burn', name: 'Slow Burn', count: 18, description: 'Simmering tension and emotional depth' },
+  { id: 'Romantic Suspense', name: 'Romantic Suspense', count: 12, description: 'Danger, intrigue, and fierce devotion' },
+  { id: 'Gothic Romance', name: 'Gothic Romance', count: 9, description: 'Haunted manors, rainswept moors, and dark allure' },
   { id: 'Second Chance', name: 'Second Chance', count: 14, description: 'Rekindled passion and healed pasts' },
   { id: 'Enemies to Lovers', name: 'Enemies to Lovers', count: 22, description: 'Sharp wit, fierce rivalry, undeniable heat' },
   { id: 'Billionaire Romance', name: 'Billionaire Romance', count: 12, description: 'High-stakes glamour and powerful attraction' },
   { id: 'Small Town Romance', name: 'Small Town Romance', count: 16, description: 'Cozy intimacy, community, and fresh starts' },
-  { id: 'Forbidden Love', name: 'Forbidden Love', count: 9, description: 'Dangerous secrets and stolen moments' },
   { id: 'Friends to Lovers', name: 'Friends to Lovers', count: 15, description: 'A lifelong bond tested by sudden desire' },
-  { id: 'Workplace Romance', name: 'Workplace Romance', count: 11, description: 'Late-night meetings and office chemistry' },
 ];
 
 export const RECENT_CHAPTERS = [
   {
-    storyId: 'story-summer-stayed',
-    storyTitle: 'The Summer We Almost Stayed',
-    coverImage: BOOK_COVERS.summerStayed,
-    chapterNumber: 5,
-    chapterTitle: 'The Harbor Lanterns at Midnight',
-    durationSeconds: 240,
-    publishedAt: 'Today (Oct 25)',
+    storyId: 'story-blackwood-manor',
+    storyTitle: 'The Secret of Blackwood Manor',
+    coverImage: BOOK_COVERS.blackwoodManor,
+    chapterNumber: 1,
+    chapterTitle: 'Arrival at the Wuthering Moors',
+    durationSeconds: 250,
+    publishedAt: 'Complete Saga · 100% Free',
     isNewToday: true,
-    isPremium: true,
+    isPremium: false,
+    narratorName: 'Arthur Pendelton',
+  },
+  {
+    storyId: 'story-crimson-cove',
+    storyTitle: 'The Shadow of Crimson Cove',
+    coverImage: BOOK_COVERS.crimsonCove,
+    chapterNumber: 1,
+    chapterTitle: 'Tide of Broken Glass',
+    durationSeconds: 240,
+    publishedAt: 'Complete Saga · 100% Free',
+    isNewToday: true,
+    isPremium: false,
     narratorName: 'Eleanor Sterling',
   },
   {
-    storyId: 'story-contract-winter',
-    storyTitle: 'A Contract Written in Winter',
-    coverImage: BOOK_COVERS.contractWinter,
-    chapterNumber: 4,
-    chapterTitle: 'Whispers in the Snow',
+    storyId: 'story-midnight-cipher',
+    storyTitle: 'The Midnight Cipher',
+    coverImage: BOOK_COVERS.midnightCipher,
+    chapterNumber: 1,
+    chapterTitle: 'The Cello in Box Nine',
     durationSeconds: 245,
-    publishedAt: 'Today (Oct 25)',
+    publishedAt: 'Complete Saga · 100% Free',
     isNewToday: true,
-    isPremium: true,
+    isPremium: false,
     narratorName: 'James Montgomery',
   },
   {
-    storyId: 'story-things-never-said',
-    storyTitle: 'The Things We Never Said',
-    coverImage: BOOK_COVERS.neverSaid,
-    chapterNumber: 3,
-    chapterTitle: 'The Forgotten Rose Garden',
-    durationSeconds: 230,
-    publishedAt: 'Today (Oct 25)',
-    isNewToday: true,
-    isPremium: true,
-    narratorName: 'Sophie Hartwell',
-  },
-  {
     storyId: 'story-summer-stayed',
     storyTitle: 'The Summer We Almost Stayed',
     coverImage: BOOK_COVERS.summerStayed,
-    chapterNumber: 4,
-    chapterTitle: 'The Blue Hour Promise',
-    durationSeconds: 215,
-    publishedAt: 'Yesterday',
-    isNewToday: false,
-    isPremium: true,
+    chapterNumber: 10,
+    chapterTitle: 'The Vow at the Belvedere',
+    durationSeconds: 240,
+    publishedAt: 'Free Milestone Ch. 1–10',
+    isNewToday: true,
+    isPremium: false,
     narratorName: 'Eleanor Sterling',
   },
   {
     storyId: 'story-contract-winter',
     storyTitle: 'A Contract Written in Winter',
     coverImage: BOOK_COVERS.contractWinter,
-    chapterNumber: 3,
-    chapterTitle: 'A Snowbound Evening',
-    durationSeconds: 230,
-    publishedAt: '2 days ago',
-    isNewToday: false,
-    isPremium: true,
+    chapterNumber: 10,
+    chapterTitle: 'The True Clause',
+    durationSeconds: 245,
+    publishedAt: 'Free Milestone Ch. 1–10',
+    isNewToday: true,
+    isPremium: false,
     narratorName: 'James Montgomery',
   },
 ];

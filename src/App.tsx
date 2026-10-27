@@ -112,10 +112,12 @@ function MainApp() {
           currentTab === 'new-releases' ||
           currentTab === 'completed') && (
           <BrowseView
+            key={currentTab}
             stories={SAMPLE_STORIES}
             onSelectStory={handleSelectStory}
             initialQuery={searchQuery}
             initialMood={moodFilter}
+            initialStatus={currentTab === 'completed' ? 'Completed' : 'All'}
           />
         )}
 

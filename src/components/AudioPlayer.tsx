@@ -43,61 +43,112 @@ export const AudioPlayer: React.FC = () => {
     prevChapter,
     setIsExpanded,
     setReadingMode,
+    commitSeek,
+    setIsScrubbing,
   } = useAudio();
 
   const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState(false);
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [scrubTime, setScrubTime] = useState<number | null>(null);
+
+  const topBarRef = useRef<HTMLDivElement>(null);
+  const isTopScrubbingRef = useRef(false);
   const speeds = [0.75, 1, 1.25, 1.5, 2];
 
   if (!currentStory || !currentChapter) {
     return null;
   }
 
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const remainingTime = Math.max(0, duration - currentTime);
+  const activeTime = isDragging && scrubTime !== null ? scrubTime : currentTime;
+  const progressPercentage = duration > 0 ? (activeTime / duration) * 100 : 0;
+  const remainingTime = Math.max(0, duration - activeTime);
 
-  const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
+  const calculateTimeFromClientX = (clientX: number) => {
+    if (!topBarRef.current || duration <= 0) return { time: 0, positionX: 0 };
+    const rect = topBarRef.current.getBoundingClientRect();
+    const clickX = clientX - rect.left;
     const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-    seek(Math.round(ratio * duration));
+    return {
+      time: Math.round(ratio * duration),
+      positionX: Math.max(0, Math.min(rect.width, clickX)),
+    };
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const hoverX = e.clientX - rect.left;
-    const ratio = Math.max(0, Math.min(1, hoverX / rect.width));
-    setHoverTime(Math.round(ratio * duration));
-    setHoverPosition(hoverX);
+  const handlePointerDownTopBar = (e: React.PointerEvent<HTMLDivElement>) => {
+    isTopScrubbingRef.current = true;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (_) {}
+    setIsScrubbing(true);
+    setIsDragging(true);
+    const { time, positionX } = calculateTimeFromClientX(e.clientX);
+    setHoverTime(time);
+    setHoverPosition(positionX);
+    setScrubTime(time);
+    seek(time, false);
+  };
+
+  const handlePointerMoveTopBar = (e: React.PointerEvent<HTMLDivElement>) => {
+    const { time, positionX } = calculateTimeFromClientX(e.clientX);
+    setHoverTime(time);
+    setHoverPosition(positionX);
+    if (isTopScrubbingRef.current) {
+      setScrubTime(time);
+      seek(time, false);
+    }
+  };
+
+  const handlePointerUpTopBar = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isTopScrubbingRef.current) {
+      isTopScrubbingRef.current = false;
+      const { time } = calculateTimeFromClientX(e.clientX);
+      commitSeek(time);
+      setIsDragging(false);
+      setScrubTime(null);
+      setIsScrubbing(false);
+    }
   };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#2C2528] text-[#FFF9F5] border-t border-[#453A3E] shadow-2xl transition-all duration-200">
-      {/* Interactive Top Scrubber Bar with Click-to-Seek & Hover Preview */}
+      {/* Interactive Top Scrubber Bar with Drag-to-Seek & Live Floating Preview */}
       <div
-        onClick={handleTrackClick}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setHoverTime(null)}
-        className="w-full h-2.5 bg-[#453A3E]/70 hover:h-3.5 relative cursor-pointer group transition-all"
-        title="Click or drag to seek anywhere in chapter"
+        ref={topBarRef}
+        onPointerDown={handlePointerDownTopBar}
+        onPointerMove={handlePointerMoveTopBar}
+        onPointerUp={handlePointerUpTopBar}
+        onPointerLeave={() => {
+          if (!isTopScrubbingRef.current) setHoverTime(null);
+        }}
+        className="w-full h-3 bg-[#453A3E]/70 hover:h-4 relative cursor-pointer group transition-all touch-none select-none"
+        title="Click or drag anywhere to seek"
       >
-        {/* Hover preview tooltip */}
-        {hoverTime !== null && (
+        {/* Floating preview badge */}
+        {(hoverTime !== null || (isDragging && scrubTime !== null)) && (
           <div
-            className="absolute bottom-4 -translate-x-1/2 bg-[#241E20] text-[#D9A5B5] border border-[#6E5961] text-[10px] font-mono px-1.5 py-0.5 rounded shadow pointer-events-none"
-            style={{ left: `${hoverPosition}px` }}
+            className="absolute bottom-4 -translate-x-1/2 bg-[#241E20] text-[#D9A5B5] border border-[#6E5961] text-xs font-mono font-semibold px-2 py-0.5 rounded-md shadow-lg pointer-events-none z-30"
+            style={{
+              left: `${
+                hoverTime !== null
+                  ? hoverPosition
+                  : duration > 0
+                  ? ((scrubTime || 0) / duration) * 100 + '%'
+                  : '0%'
+              }`,
+            }}
           >
-            {formatTime(hoverTime)}
+            {formatTime(hoverTime !== null ? hoverTime : scrubTime || 0)}
           </div>
         )}
 
         <div
-          className="h-full bg-[#D9A5B5] transition-all duration-75 relative"
+          className="h-full bg-[#D9A5B5] transition-[width] duration-75 relative pointer-events-none"
           style={{ width: `${progressPercentage}%` }}
         >
           {/* Scrubber Knob */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-md border-2 border-[#873F55] opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-white shadow-md border-2 border-[#873F55] opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-transform" />
         </div>
       </div>
 
@@ -202,23 +253,58 @@ export const AudioPlayer: React.FC = () => {
 
           {/* Time Bar & Responsive Slider */}
           <div className="w-full flex items-center gap-3 text-[11px] text-[#D1C3C6] tabular-nums">
-            <span className="w-10 text-right font-mono">{formatTime(currentTime)}</span>
+            <span className="w-10 text-right font-mono font-medium">{formatTime(activeTime)}</span>
             
             <div className="relative flex-1 flex items-center py-1">
+              {/* Floating Scrub Time Tooltip Badge */}
+              {isDragging && scrubTime !== null && (
+                <div
+                  className="absolute -top-7 -translate-x-1/2 bg-[#D9A5B5] text-[#2C2528] font-mono font-bold text-[11px] px-2 py-0.5 rounded shadow-lg pointer-events-none z-30"
+                  style={{
+                    left: `${duration > 0 ? Math.max(0, Math.min(100, (scrubTime / duration) * 100)) : 0}%`,
+                  }}
+                >
+                  {formatTime(scrubTime)}
+                </div>
+              )}
+
               <input
                 type="range"
                 min={0}
                 max={duration || 100}
                 step="1"
-                value={currentTime}
-                onChange={(e) => seek(Number(e.target.value))}
-                onInput={(e) => seek(Number((e.target as HTMLInputElement).value))}
+                value={activeTime}
+                onPointerDown={(e) => {
+                  setIsDragging(true);
+                  const val = Number((e.currentTarget as HTMLInputElement).value);
+                  setScrubTime(val);
+                  setIsScrubbing(true);
+                }}
+                onInput={(e) => {
+                  const val = Number((e.target as HTMLInputElement).value);
+                  setScrubTime(val);
+                  seek(val, false);
+                }}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setScrubTime(val);
+                  commitSeek(val);
+                  setIsDragging(false);
+                  setIsScrubbing(false);
+                }}
+                onPointerUp={(e) => {
+                  const val = Number((e.target as HTMLInputElement).value);
+                  commitSeek(val);
+                  setIsDragging(false);
+                  setIsScrubbing(false);
+                  setScrubTime(null);
+                }}
                 aria-label="Seek time in chapter"
                 className="w-full h-2 bg-[#453A3E] rounded-full accent-[#D9A5B5] cursor-pointer focus:outline-hidden"
               />
             </div>
 
-            <span className="w-10 text-left font-mono">-{formatTime(remainingTime)}</span>
+            <span className="w-10 text-left font-mono font-medium">-{formatTime(remainingTime)}</span>
           </div>
         </div>
 

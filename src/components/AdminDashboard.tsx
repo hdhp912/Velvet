@@ -139,7 +139,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               <span className="text-[10px] uppercase font-semibold text-[#873F55] tracking-wider block">
                 Publisher Console
               </span>
-              <span className="font-editorial text-lg text-[#292421]">Velvet Studio</span>
+              <span className="font-editorial text-lg text-[#292421]">Dino Studio</span>
             </div>
             <button
               onClick={onExit}

@@ -149,7 +149,7 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
           </h1>
 
           <p className="text-sm sm:text-base text-[#746B65] mb-5">
-            Written by <span className="text-[#292421] font-medium">{story.author}</span> · Velvet Original Audio Production
+            Written by <span className="text-[#292421] font-medium">{story.author}</span> · Mysteries Unveiled by Dino Production
           </p>
 
           {/* Action Row: Read Chapter text as primary, Listen audio as dedicated secondary */}
@@ -210,20 +210,22 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
             </p>
           </div>
 
-          {/* Premium banner if free user */}
-          {!user?.isPremium && (
-            <div className="p-4 bg-[#F2EEEA] border border-[#E7E0DA] rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-              <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-[#873F55] shrink-0" />
-                <div className="text-xs">
-                  <span className="font-semibold text-[#292421] block">
-                    Free preview active
-                  </span>
-                  <span className="text-[#746B65]">
-                    First 2 chapters are free. Tap below to unlock instant VIP Demo access or view full membership plans.
-                  </span>
-                </div>
+          {/* Free access info banner */}
+          <div className="p-4 bg-[#F2EEEA] border border-[#E7E0DA] rounded-[10px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-5 h-5 text-[#873F55] shrink-0" />
+              <div className="text-xs">
+                <span className="font-semibold text-[#292421] block">
+                  {story.status === 'Completed' ? '100% Free Complete Saga' : 'Chapters 1 to 10 Free'}
+                </span>
+                <span className="text-[#746B65]">
+                  {story.status === 'Completed'
+                    ? 'All chapters of this saga are 100% free to read and listen with full audio.'
+                    : 'Chapters 1 through 10 are completely free to read and listen. Only Chapter 11+ requires membership.'}
+                </span>
               </div>
+            </div>
+            {!user?.isPremium && (
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => {
@@ -232,7 +234,7 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                   }}
                   className="px-3.5 py-1.5 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors shadow-xs whitespace-nowrap"
                 >
-                  ⭐ Unlock VIP Demo
+                  ⭐ VIP Mode
                 </button>
                 <button
                   onClick={onNavigateMembership}
@@ -241,8 +243,8 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                   Membership Plans
                 </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

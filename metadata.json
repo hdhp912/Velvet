@@ -1,6 +1,6 @@
 {
-  "name": "Velvet Stories",
-  "description": "A premium romance audiobook platform with intimate narratives, immersive audio narration, and serialized love stories.",
+  "name": "Mysteries Unveiled by Dino",
+  "description": "A premium mystery and romance audiobook platform curated by Dino, featuring serialized sagas, complete free mystery collections, and immersive voice narration.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

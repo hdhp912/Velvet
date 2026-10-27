@@ -8,7 +8,10 @@ export type Genre =
   | 'Slow Burn'
   | 'Workplace'
   | 'Forbidden'
-  | 'Friends to Lovers';
+  | 'Friends to Lovers'
+  | 'Mystery'
+  | 'Romantic Suspense'
+  | 'Gothic Romance';
 
 export type StoryStatus = 'Ongoing' | 'Completed';
 

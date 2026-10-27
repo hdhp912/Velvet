@@ -33,11 +33,14 @@ export const BrandWordmark: React.FC<BrandWordmarkProps> = ({ className = '', on
       </svg>
 
       <span
-        className={`font-editorial tracking-tight text-[#292421] transition-colors duration-200 group-hover:text-[#873F55] ${
-          size === 'large' ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-[22px]'
+        className={`font-editorial tracking-tight text-[#292421] transition-colors duration-200 group-hover:text-[#873F55] flex items-baseline gap-1.5 ${
+          size === 'large' ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-[21px]'
         }`}
       >
-        Velvet Stories
+        <span>Mysteries Unveiled</span>
+        <span className="font-serif italic text-[0.82em] text-[#873F55] font-normal tracking-normal">
+          by Dino
+        </span>
       </span>
     </div>
   );

@@ -15,10 +15,10 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate, onOpenAdmin 
           <div className="md:col-span-5 space-y-3">
             <BrandWordmark onClick={() => onNavigate('home')} />
             <p className="text-[#746B65] text-xs sm:text-sm max-w-sm leading-relaxed mt-2">
-              Velvet Stories is an independent audiobook studio crafting serialized, long-form romance fiction. Every series features one dedicated narrator voice, rich emotional prose, and daily chapter releases.
+              Mysteries Unveiled by Dino is an independent audiobook studio crafting serialized romance fiction and complete mystery sagas. Every production features dedicated voice narration, synchronized prose, and generous free chapter access.
             </p>
             <p className="text-[11px] text-[#948982]">
-              Recorded and mastered for lovers of slow burns, intimate atmospheres, and unforgettable romance.
+              Curated by Dino for listeners who adore slow burns, atmospheric mysteries, and emotional depth.
             </p>
           </div>
 
@@ -131,7 +131,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate, onOpenAdmin 
                   href="#contact"
                   onClick={(e) => {
                     e.preventDefault();
-                    alert('Velvet Stories Editorial Desk: editorial@velvetstories.com');
+                    alert('Mysteries Unveiled by Dino Editorial Desk: dino@mysteriesunveiled.com');
                   }}
                   className="hover:text-[#873F55] transition-colors"
                 >
@@ -144,7 +144,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate, onOpenAdmin 
 
         {/* Bottom Sub-Footer */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#948982]">
-          <p>© {new Date().getFullYear()} Velvet Stories. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Mysteries Unveiled by Dino. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <a href="#terms" onClick={(e) => e.preventDefault()} className="hover:text-[#292421]">
               Terms of Service

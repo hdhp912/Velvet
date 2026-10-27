@@ -24,8 +24,8 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
       upgradeToPremium(billingCycle);
       showToast(
         billingCycle === 'annual'
-          ? 'Welcome to Velvet Stories Premium (Annual Plan)'
-          : 'Welcome to Velvet Stories Premium (Monthly Plan)',
+          ? 'Welcome to Mysteries Unveiled by Dino Premium (Annual Plan)'
+          : 'Welcome to Mysteries Unveiled by Dino Premium (Monthly Plan)',
         'success'
       );
     }
@@ -39,10 +39,10 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
           Simple, Transparent Membership
         </span>
         <h1 className="font-editorial text-3xl sm:text-4xl md:text-[42px] leading-tight text-[#292421] mb-4">
-          Make room for another story.
+          Make room for another mystery.
         </h1>
         <p className="text-sm sm:text-base text-[#746B65] leading-relaxed">
-          Unlock complete 100-chapter romance serials, exclusive narrator performances, and every daily chapter release without interruption.
+          Enjoy 10 complete mystery sagas 100% free, experience the first 10 chapters of all serialized romances at no cost, and unlock premium releases without interruption.
         </p>
 
         {/* Billing Cycle Toggle */}
@@ -85,7 +85,7 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
             </div>
 
             <p className="text-xs text-[#746B65] mb-6">
-              Preview opening chapters and experience our original voice narration library.
+              Generous free access: enjoy 10 complete mystery sagas and the first 10 chapters of every serial.
             </p>
 
             <div className="flex items-baseline gap-1 mb-8">
@@ -97,19 +97,19 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
             <ul className="space-y-3.5 text-xs sm:text-sm text-[#746B65] mb-8">
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Access to the first 2 chapters of every story</span>
+                <span><strong>Chapters 1 to 10 free</strong> on all serialized romance stories</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Full access to completed preview series</span>
+                <span><strong>10 complete mystery sagas</strong> 100% free with full text & audio</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Standard narration audio quality</span>
+                <span>Full access to voice narration & audio scrubber player</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Synchronized reading mode text</span>
+                <span>Synchronized reading mode text with exact word count</span>
               </li>
             </ul>
           </div>

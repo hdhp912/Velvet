@@ -8,6 +8,7 @@ interface BrowseViewProps {
   onSelectStory: (id: string) => void;
   initialQuery?: string;
   initialMood?: string;
+  initialStatus?: 'All' | 'Ongoing' | 'Completed';
 }
 
 export const BrowseView: React.FC<BrowseViewProps> = ({
@@ -15,15 +16,19 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
   onSelectStory,
   initialQuery = '',
   initialMood = '',
+  initialStatus = 'All',
 }) => {
   const [search, setSearch] = useState(initialQuery);
   const [selectedMood, setSelectedMood] = useState(initialMood);
-  const [selectedStatus, setSelectedStatus] = useState<'All' | 'Ongoing' | 'Completed'>('All');
+  const [selectedStatus, setSelectedStatus] = useState<'All' | 'Ongoing' | 'Completed'>(initialStatus);
   const [selectedAccess, setSelectedAccess] = useState<'All' | 'Free' | 'Premium'>('All');
   const [sortBy, setSortBy] = useState<'updated' | 'chapters' | 'title'>('updated');
 
   const moods = [
     'All',
+    'Mystery',
+    'Romantic Suspense',
+    'Gothic Romance',
     'Slow Burn',
     'Second Chance',
     'Enemies to Lovers',
