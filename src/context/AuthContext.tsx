@@ -1,45 +1,39 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { UserProfile, MembershipPlanId, AgeGroup } from '../types';
-import { MEMBERSHIP_PLANS } from '../data/dailyPlanData';
+import { UserProfile } from '../types';
 
 interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
-  isPremium: boolean;
   isAuthModalOpen: boolean;
-  authModalMode: 'signin' | 'signup' | 'profile';
-  openAuthModal: (mode?: 'signin' | 'signup' | 'profile') => void;
+  authModalMode: 'signin' | 'signup' | 'reset';
+  openAuthModal: (mode?: 'signin' | 'signup' | 'reset') => void;
   closeAuthModal: () => void;
-  signIn: (email: string, name?: string, phone?: string) => void;
+  signIn: (email: string, name?: string) => void;
   signOut: () => void;
-  updateChildInfo: (childName: string, childAge: AgeGroup) => void;
-  toggleFavoriteActivity: (activityId: string) => void;
-  toggleCompletedActivity: (activityId: string) => void;
-  toggleFavoriteColoring: (coloringId: string) => void;
-  requestSubscription: (planId: MembershipPlanId, refCode?: string) => void;
-  activateSubscriptionForTest: (planId: MembershipPlanId) => void;
-  resetSubscriptionToFree: () => void;
-  toggleFavorite: (id: string) => void;
+  upgradeToPremium: (plan: 'monthly' | 'annual') => void;
   togglePremiumMembership: () => void;
+  toggleFavorite: (storyId: string) => void;
 }
 
 const DEFAULT_USER: UserProfile = {
-  id: 'user-demo-1',
-  name: 'Mẹ Thu Hà',
-  email: 'thuha.nguyen@gmail.com',
-  phoneNumber: '0988123456',
-  childName: 'Bé Bông',
-  childAge: '3-4',
+  id: 'user-dino-1',
+  name: 'Camilla Hayes',
+  email: 'camilla.hayes@mysteriesunveiled.com',
   isPremium: false,
-  subscription: {
-    planId: 'free',
-    planName: 'Gói Miễn Phí',
-    status: 'free',
-  },
-  memberSince: '10/2026',
-  savedActivities: ['act-01', 'act-03'],
-  completedActivities: ['act-02'],
-  savedColoringPages: ['color-01', 'color-02'],
+  membershipPlan: 'free',
+  memberSince: 'October 2026',
+  listeningHistory: [
+    {
+      storyId: 'story-summer-stayed',
+      chapterId: 'chap-ss-1',
+      chapterNumber: 1,
+      progressPercentage: 18,
+      lastReadAt: '2026-10-25T09:15:00Z',
+      progressSeconds: 142,
+      totalSeconds: 780,
+    },
+  ],
+  favorites: ['story-summer-stayed', 'story-contract-winter'],
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,27 +41,22 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
-      const saved = localStorage.getItem('ccmn_user_session');
+      const saved = localStorage.getItem('dino_user_session');
       if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error('Failed to parse saved user:', e);
-    }
+    } catch (_) {}
     return DEFAULT_USER;
   });
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | 'profile'>('signin');
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | 'reset'>('signin');
 
-  const saveUser = (u: UserProfile | null) => {
-    setUser(u);
-    if (u) {
-      localStorage.setItem('ccmn_user_session', JSON.stringify(u));
-    } else {
-      localStorage.removeItem('ccmn_user_session');
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('dino_user_session', JSON.stringify(user));
     }
-  };
+  }, [user]);
 
-  const openAuthModal = (mode: 'signin' | 'signup' | 'profile' = 'signin') => {
+  const openAuthModal = (mode: 'signin' | 'signup' | 'reset' = 'signin') => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
   };
@@ -76,141 +65,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthModalOpen(false);
   };
 
-  const signIn = (email: string, name?: string, phone?: string) => {
-    const displayName = name || email.split('@')[0].replace(/[._]/g, ' ');
-    const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
-    const existing = user;
-    const updated: UserProfile = {
-      id: existing?.id || `user-${Date.now()}`,
-      name: formattedName || 'Phụ huynh Cùng Con',
+  const signIn = (email: string, name?: string) => {
+    const newUser: UserProfile = {
+      id: `user-${Date.now()}`,
+      name: name || email.split('@')[0],
       email,
-      phoneNumber: phone || existing?.phoneNumber || '0988123456',
-      childName: existing?.childName || 'Bé Cưng',
-      childAge: existing?.childAge || '3-4',
-      isPremium: existing?.isPremium || false,
-      subscription: existing?.subscription || {
-        planId: 'free',
-        planName: 'Gói Miễn Phí',
-        status: 'free'
-      },
-      memberSince: existing?.memberSince || new Date().toLocaleDateString('vi-VN'),
-      savedActivities: existing?.savedActivities || ['act-01'],
-      completedActivities: existing?.completedActivities || [],
-      savedColoringPages: existing?.savedColoringPages || ['color-01']
+      isPremium: false,
+      membershipPlan: 'free',
+      memberSince: 'October 2026',
+      listeningHistory: [],
+      favorites: [],
     };
-    saveUser(updated);
+    setUser(newUser);
     closeAuthModal();
   };
 
   const signOut = () => {
-    saveUser(null);
+    setUser(null);
+    localStorage.removeItem('dino_user_session');
   };
 
-  const updateChildInfo = (childName: string, childAge: AgeGroup) => {
+  const upgradeToPremium = (plan: 'monthly' | 'annual') => {
     if (!user) return;
-    const updated: UserProfile = {
-      ...user,
-      childName,
-      childAge
-    };
-    saveUser(updated);
-  };
-
-  const toggleFavoriteActivity = (activityId: string) => {
-    if (!user) {
-      openAuthModal('signin');
-      return;
-    }
-    const current = user.savedActivities || [];
-    const exists = current.includes(activityId);
-    const updated: UserProfile = {
-      ...user,
-      savedActivities: exists ? current.filter((id) => id !== activityId) : [...current, activityId]
-    };
-    saveUser(updated);
-  };
-
-  const toggleCompletedActivity = (activityId: string) => {
-    if (!user) {
-      openAuthModal('signin');
-      return;
-    }
-    const current = user.completedActivities || [];
-    const exists = current.includes(activityId);
-    const updated: UserProfile = {
-      ...user,
-      completedActivities: exists ? current.filter((id) => id !== activityId) : [...current, activityId]
-    };
-    saveUser(updated);
-  };
-
-  const toggleFavoriteColoring = (coloringId: string) => {
-    if (!user) {
-      openAuthModal('signin');
-      return;
-    }
-    const current = user.savedColoringPages || [];
-    const exists = current.includes(coloringId);
-    const updated: UserProfile = {
-      ...user,
-      savedColoringPages: exists ? current.filter((id) => id !== coloringId) : [...current, coloringId]
-    };
-    saveUser(updated);
-  };
-
-  const requestSubscription = (planId: MembershipPlanId, refCode?: string) => {
-    if (!user) {
-      openAuthModal('signin');
-      return;
-    }
-    const targetPlan = MEMBERSHIP_PLANS.find(p => p.id === planId) || MEMBERSHIP_PLANS[1];
-    const updated: UserProfile = {
-      ...user,
-      subscription: {
-        planId: targetPlan.id,
-        planName: targetPlan.name,
-        status: 'pending_approval',
-        startedAt: new Date().toISOString(),
-        paymentRef: refCode || `CCMN-${user.phoneNumber || '985726'}`
-      }
-    };
-    saveUser(updated);
-  };
-
-  const activateSubscriptionForTest = (planId: MembershipPlanId) => {
-    if (!user) return;
-    const targetPlan = MEMBERSHIP_PLANS.find(p => p.id === planId) || MEMBERSHIP_PLANS[1];
-    const now = new Date();
-    const expiresDate = new Date(now.getTime() + targetPlan.durationDays * 24 * 60 * 60 * 1000);
-
-    const updated: UserProfile = {
+    setUser({
       ...user,
       isPremium: true,
-      subscription: {
-        planId: targetPlan.id,
-        planName: targetPlan.name,
-        status: 'active',
-        startedAt: now.toLocaleDateString('vi-VN'),
-        expiresAt: expiresDate.toLocaleDateString('vi-VN'),
-        daysRemaining: targetPlan.durationDays,
-        paymentRef: `TEST-${Math.floor(100000 + Math.random() * 900000)}`
-      }
-    };
-    saveUser(updated);
+      membershipPlan: plan,
+    });
   };
 
-  const resetSubscriptionToFree = () => {
+  const togglePremiumMembership = () => {
     if (!user) return;
-    const updated: UserProfile = {
+    setUser({
       ...user,
-      isPremium: false,
-      subscription: {
-        planId: 'free',
-        planName: 'Gói Miễn Phí',
-        status: 'free'
-      }
-    };
-    saveUser(updated);
+      isPremium: !user.isPremium,
+      membershipPlan: !user.isPremium ? 'monthly' : 'free',
+    });
+  };
+
+  const toggleFavorite = (storyId: string) => {
+    if (!user) return;
+    const exists = user.favorites.includes(storyId);
+    const newFavorites = exists
+      ? user.favorites.filter((id) => id !== storyId)
+      : [...user.favorites, storyId];
+    setUser({
+      ...user,
+      favorites: newFavorites,
+    });
   };
 
   return (
@@ -218,22 +120,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         isAuthenticated: !!user,
-        isPremium: !!user?.isPremium,
         isAuthModalOpen,
         authModalMode,
         openAuthModal,
         closeAuthModal,
         signIn,
         signOut,
-        updateChildInfo,
-        toggleFavoriteActivity,
-        toggleCompletedActivity,
-        toggleFavoriteColoring,
-        requestSubscription,
-        activateSubscriptionForTest,
-        resetSubscriptionToFree,
-        toggleFavorite: toggleFavoriteActivity,
-        togglePremiumMembership: () => (user?.isPremium ? resetSubscriptionToFree() : activateSubscriptionForTest('monthly'))
+        upgradeToPremium,
+        togglePremiumMembership,
+        toggleFavorite,
       }}
     >
       {children}
@@ -242,7 +137,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
 };
