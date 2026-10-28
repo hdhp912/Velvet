@@ -103,14 +103,14 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect, onReadCha
           {story.synopsis}
         </p>
 
-        {/* Footer info: Chapters count & Verified Word Count */}
+        {/* Footer info: Chapters count & Story teaser */}
         <div className="pt-2.5 border-t border-[#F2EEEA] flex items-center justify-between text-[11px] text-[#948982]">
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 shrink-0">
             <FileText className="w-3 h-3 text-[#948982]" />
             <span>{story.publishedChaptersCount} chapters</span>
           </span>
-          <span className="font-medium text-[#39745A] bg-[#EAF5EF] px-1.5 py-0.5 rounded text-[10px]">
-            ✓ ~{avgWords.toLocaleString()} words/ch
+          <span className="text-[#873F55] italic text-[10px] truncate max-w-[140px] font-serif" title={story.chapters[0]?.synopsis || story.synopsis}>
+            "{story.chapters[0]?.synopsis ? story.chapters[0].synopsis.slice(0, 32) + '...' : story.genre}"
           </span>
         </div>
       </div>

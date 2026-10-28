@@ -105,7 +105,7 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Every chapter strictly exceeds <strong>1,500 words</strong> for deep reading</span>
+                <span>Rich, unabridged long-form storytelling with full prose chapters</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
@@ -172,7 +172,7 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Full unabridged chapters (&gt;1,500 words/ch) with reading continuity bookmarks</span>
+                <span>Full unabridged chapters with seamless reading continuity and bookmarks</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />

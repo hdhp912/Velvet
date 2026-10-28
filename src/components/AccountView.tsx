@@ -110,7 +110,7 @@ export const AccountView: React.FC<AccountViewProps> = ({
               </div>
               <p className="text-xs text-[#746B65] mt-0.5">
                 {user.isPremium
-                  ? 'Unlimited access to all serialized sagas, long-form chapters (>1,500 words), and daily automated releases.'
+                  ? 'Unlimited access to all serialized sagas, full unabridged chapters, and daily automated releases.'
                   : 'Includes 20 complete 100% free sagas and chapters 1–10 free on serialized romance. Upgrade to unlock chapters 11+.'}
               </p>
             </div>
@@ -213,13 +213,18 @@ export const AccountView: React.FC<AccountViewProps> = ({
                     >
                       {story.title}
                     </h4>
-                    <span className="text-[11px] text-[#39745A] font-medium bg-[#EAF5EF] px-1.5 py-0.5 rounded">
-                      ✓ {chapter?.wordCount || 1940} words
+                    <span className="text-[11px] text-[#873F55] font-medium bg-[#F4E8EC] px-1.5 py-0.5 rounded">
+                      Unabridged Chapter
                     </span>
                   </div>
-                  <p className="text-xs text-[#746B65] mb-2">
+                  <p className="text-xs text-[#746B65] mb-1 font-medium">
                     Chapter {item.chapterNumber}: {chapter?.title || 'Chapter ' + item.chapterNumber}
                   </p>
+                  {chapter?.synopsis && (
+                    <p className="text-[11px] text-[#948982] line-clamp-1 italic mb-2 font-serif">
+                      "{chapter.synopsis}"
+                    </p>
+                  )}
 
                   <div className="flex items-center gap-4">
                     <button

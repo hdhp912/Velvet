@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   ArrowRight,
-  Clock,
   Sparkles,
   BookOpen,
   CheckCircle2,
@@ -58,7 +57,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="mb-6 inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F4E8EC] border border-[#E7E0DA] text-xs text-[#873F55] font-medium shadow-2xs">
           <Sparkles className="w-3.5 h-3.5 text-[#873F55] shrink-0" />
           <span>
-            <strong>20 Complete Sagas 100% Free:</strong> Unabridged long-form chapters (&gt;1,500 words/chapter) · Chapters 1–10 Free on Serialized series
+            <strong>20 Complete Sagas 100% Free:</strong> Unabridged full-length chapters · Chapters 1–10 Free on Serialized series
           </span>
         </div>
 
@@ -74,7 +73,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </h1>
 
             <p className="text-base sm:text-[17px] text-[#746B65] leading-relaxed max-w-[560px] mb-8">
-              Immerse yourself in rich, atmospheric storytelling crafted chapter by chapter. Every single chapter is guaranteed to exceed 1,500 words for deep, satisfying reading. Enjoy 20 fully completed sagas 100% free, automated daily chapter releases, and generous free previews.
+              Immerse yourself in rich, atmospheric storytelling crafted chapter by chapter. Enjoy 20 fully completed sagas 100% free, automated daily chapter releases, and generous free previews for continuous immersive reading.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
@@ -130,7 +129,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   {featuredStory.title}
                 </h3>
                 <p className="text-xs text-[#D1C3C6] mt-0.5">
-                  {featuredStory.publishedChaptersCount} Chapters · &gt;1,500 Words/Chapter
+                  {featuredStory.publishedChaptersCount} Chapters · Full Unabridged Text
                 </p>
               </div>
             </div>
@@ -154,7 +153,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 Today’s Fresh Chapter Releases
               </h2>
               <p className="text-xs sm:text-sm text-[#746B65] mt-1">
-                New chapters automatically published daily. Every chapter strictly verified &gt;1,500 words for deep immersion.
+                New chapters automatically published daily for deep, atmospheric reading.
               </p>
             </div>
 
@@ -218,12 +217,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     <p className="text-xs text-[#746B65] truncate mt-0.5">
                       {drop.storyTitle}
                     </p>
-                    <div className="flex items-center gap-3 text-[11px] text-[#948982] mt-2">
-                      <span className="font-medium text-[#39745A] bg-[#EAF5EF] px-1.5 py-0.5 rounded">
-                        ✓ {drop.wordCount.toLocaleString()} words
+                    {drop.summary && (
+                      <p className="text-xs text-[#746B65] line-clamp-1 italic mt-1 font-serif">
+                        "{drop.summary}"
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 text-[11px] text-[#948982] mt-1.5">
+                      <span className="font-medium text-[#873F55] bg-[#F4E8EC] px-1.5 py-0.5 rounded">
+                        Unabridged Chapter
                       </span>
-                      <span>·</span>
-                      <span>~{drop.estimatedReadMinutes} min read</span>
                     </div>
                   </div>
                   <div className="self-center shrink-0">
@@ -281,7 +283,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="flex flex-wrap items-center gap-3 text-xs text-[#948982] mb-6">
                 <span>By <strong className="text-[#292421]">{featuredStory.author}</strong></span>
                 <span>·</span>
-                <span className="text-[#39745A] font-medium">All Chapters &gt;1,500 Words</span>
+                <span className="text-[#873F55] font-medium">Full Unabridged Editions</span>
                 <span>·</span>
                 <span>{featuredStory.status === 'Completed' ? '100% Free Complete Saga' : 'Chapters 1–10 Free'}</span>
               </div>
@@ -326,7 +328,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </span>
             </div>
             <p className="text-xs sm:text-sm text-[#746B65] mt-1">
-              Read all complete multi-chapter mysteries from beginning to end with zero limits. All chapters verified &gt;1,500 words.
+              Read all complete multi-chapter mysteries from beginning to end with zero limits and full narrative depth.
             </p>
           </div>
           <button

@@ -7,7 +7,6 @@ import {
   BookOpen,
   ArrowLeft,
   FileText,
-  Clock,
   CheckCircle2,
 } from 'lucide-react';
 import { Story, Chapter } from '../types';
@@ -32,9 +31,6 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
 
   const [imageError, setImageError] = useState(false);
   const isFavorite = user?.favorites.includes(story.id);
-
-  const totalWords = story.chapters.reduce((acc, c) => acc + c.wordCount, 0);
-  const totalReadingMinutes = Math.ceil(totalWords / 220);
 
   const handleShare = () => {
     navigator.clipboard?.writeText(window.location.href);
@@ -94,20 +90,16 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span>Total Word Count</span>
-              <span className="font-semibold text-[#873F55] tabular-nums">
-                {totalWords.toLocaleString()} words
+              <span>Format</span>
+              <span className="font-semibold text-[#873F55]">
+                Full Unabridged Serial
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span>Estimated Reading Time</span>
-              <span className="font-semibold text-[#292421]">~{totalReadingMinutes} minutes</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Chapter Length Standard</span>
+              <span>Reading Format</span>
               <span className="font-semibold text-[#39745A] flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>&gt;1,500 words / ch</span>
+                <span>Deep Immersion Prose</span>
               </span>
             </div>
           </div>
@@ -141,7 +133,7 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
               className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#873F55] text-white text-sm font-semibold rounded-lg hover:bg-[#6F3044] transition-colors shadow-xs"
             >
               <BookOpen className="w-4 h-4" />
-              <span>Read Chapter 1 ({story.chapters[0]?.wordCount.toLocaleString()} words)</span>
+              <span>Read Chapter 1 · Start Reading</span>
             </button>
 
             <button
@@ -185,7 +177,7 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                 </span>
                 <span className="text-[#746B65]">
                   {story.status === 'Completed'
-                    ? 'All chapters of this saga are 100% free to read with verified long-form depth (>1500 words per chapter).'
+                    ? 'All chapters of this saga are 100% free to read with complete, unabridged narrative depth.'
                     : 'Chapters 1 through 10 are completely free to read. Only Chapter 11+ requires membership.'}
                 </span>
               </div>
@@ -219,11 +211,11 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
           <div>
             <h2 className="font-editorial text-2xl text-[#292421]">Chapters</h2>
             <p className="text-xs text-[#746B65] mt-0.5">
-              Select any chapter to read. Every chapter is guaranteed over 1,500 words.
+              Select any chapter to read complete, unabridged story text.
             </p>
           </div>
           <span className="text-xs font-medium text-[#873F55] bg-[#F4E8EC] px-2.5 py-1 rounded-md">
-            {story.chapters.length} chapters available · All &gt;1,500 words
+            {story.chapters.length} chapters available · Unabridged editions
           </span>
         </div>
 
@@ -267,12 +259,7 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                     <div className="flex items-center gap-3 text-[11px] text-[#948982] mt-1.5">
                       <span className="text-[#873F55] font-semibold flex items-center gap-1">
                         <FileText className="w-3 h-3" />
-                        <span>{chapter.wordCount.toLocaleString()} words</span>
-                      </span>
-                      <span>·</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        <span>~{chapter.readingTimeMinutes || Math.ceil(chapter.wordCount / 220)} min read</span>
+                        <span>Unabridged Text</span>
                       </span>
                       <span>·</span>
                       <span>Published {chapter.publishedAt}</span>

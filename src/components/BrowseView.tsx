@@ -111,7 +111,7 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
           Discover Stories &amp; Sagas
         </h1>
         <p className="text-sm text-[#746B65]">
-          Explore 20 complete 100% free sagas, serialized romances, and newly published chapters (&gt;1,500 words per chapter).
+          Explore 20 complete 100% free sagas, serialized romances, and daily published chapters.
         </p>
       </div>
 

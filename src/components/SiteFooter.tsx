@@ -15,7 +15,7 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ onNavigate, onOpenAdmin 
           <div className="md:col-span-5 space-y-3">
             <BrandWordmark onClick={() => onNavigate('home')} />
             <p className="text-[#746B65] text-xs sm:text-sm max-w-sm leading-relaxed mt-2">
-              Mysteries Unveiled by Dino is an independent publishing platform crafting serialized fiction and complete atmospheric mysteries. Every single chapter is strictly verified &gt;1,500 words for immersive long-form reading, supported by 20 complete 100% free sagas and automated daily releases.
+              Mysteries Unveiled by Dino is an independent publishing platform crafting serialized fiction and complete atmospheric mysteries. Every single chapter is crafted for immersive long-form reading, supported by 20 complete 100% free sagas and automated daily releases.
             </p>
             <p className="text-[11px] text-[#948982]">
               Curated by Dino for readers who cherish slow burns, atmospheric puzzles, and genuine emotional depth.

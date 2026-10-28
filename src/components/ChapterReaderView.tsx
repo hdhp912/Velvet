@@ -10,7 +10,6 @@ import {
   Sun,
   Moon,
   CheckCircle2,
-  Clock,
   FileText,
 } from 'lucide-react';
 import { Story, Chapter } from '../types';
@@ -107,7 +106,6 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
 
   // Split prose into readable paragraphs
   const paragraphs = chapter.proseExcerpt.split('\n\n').filter((p) => p.trim().length > 0);
-  const readingTimeMin = Math.ceil(chapter.wordCount / 220);
 
   return (
     <div className={`min-h-screen ${currentTheme.bg} transition-colors duration-200 pb-28`}>
@@ -203,29 +201,20 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2 text-xs text-[#746B65]">
             <span>Written by <strong className="text-[#292421]">{story.author}</strong></span>
             <span>·</span>
-            <span className="inline-flex items-center gap-1 text-[#39745A] font-semibold bg-[#EAF5EF] px-2 py-0.5 rounded">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              {chapter.wordCount.toLocaleString()} words (Long-form &gt;1,500)
-            </span>
-            <span>·</span>
-            <span className="inline-flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-[#948982]" />
-              ~{readingTimeMin} min read
+            <span className="inline-flex items-center gap-1 text-[#873F55] font-medium bg-[#F4E8EC] px-2 py-0.5 rounded">
+              <Sparkles className="w-3.5 h-3.5" />
+              Full-Length Unabridged Chapter
             </span>
             <span>·</span>
             <span>Published {chapter.publishedAt}</span>
           </div>
 
-          {/* Long-form editorial notice */}
-          <div className="mt-4 p-3 bg-white/70 border border-[#E7E0DA] rounded-lg flex items-center justify-between text-xs text-[#746B65]">
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-[#873F55] shrink-0" />
-              <span>Full unabridged chapter text — comfortable long-form reading experience.</span>
+          {/* Chapter synopsis or excerpt teaser banner */}
+          {chapter.synopsis && (
+            <div className="mt-4 p-3.5 bg-white/80 border-l-3 border-[#873F55] border border-[#E7E0DA] rounded-r-lg text-xs italic text-[#746B65] font-serif shadow-2xs">
+              "{chapter.synopsis}"
             </div>
-            <span className="text-[11px] font-mono text-[#873F55] bg-[#F4E8EC] px-2 py-0.5 rounded font-medium shrink-0 hidden sm:inline">
-              Verified &gt;1,500 Words
-            </span>
-          </div>
+          )}
         </div>
 
         {/* 3. Chapter Prose Text */}
@@ -321,7 +310,7 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
               >
                 {story.chapters.map((c) => (
                   <option key={c.id} value={c.id}>
-                    Chapter {c.number}: {c.title} ({c.wordCount} words) {c.publishedAt.includes('Today') ? '★ New Today' : ''}
+                    Chapter {c.number}: {c.title} {c.publishedAt.includes('Today') ? '★ New Today' : ''}
                   </option>
                 ))}
               </select>
