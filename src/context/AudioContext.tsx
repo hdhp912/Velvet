@@ -80,8 +80,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const chapter = story.chapters.find((c) => c.id === parsed.chapterId) || story.chapters[0];
           setCurrentStory(story);
           setCurrentChapter(chapter);
-          setDuration(chapter.durationSeconds);
-          setCurrentTime(Math.min(parsed.progressSeconds || 0, chapter.durationSeconds));
+          setDuration(chapter.durationSeconds || 780);
+          setCurrentTime(Math.min(parsed.progressSeconds || 0, chapter.durationSeconds || 780));
         }
       } catch (e) {
         console.error('Failed to parse saved state', e);
@@ -91,7 +91,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const initialChapter = initialStory.chapters[0];
       setCurrentStory(initialStory);
       setCurrentChapter(initialChapter);
-      setDuration(initialChapter.durationSeconds);
+      setDuration(initialChapter.durationSeconds || 780);
       setCurrentTime(45);
     }
 
@@ -276,7 +276,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const playChapter = (story: Story, chapter: Chapter) => {
     setCurrentStory(story);
     setCurrentChapter(chapter);
-    setDuration(chapter.durationSeconds);
+    setDuration(chapter.durationSeconds || 780);
     setCurrentTime(0);
     setIsPlaying(true);
     startAmbientTone();
@@ -388,7 +388,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const chapter = story.chapters.find((c) => c.id === parsed.chapterId) || story.chapters[0];
           setCurrentStory(story);
           setCurrentChapter(chapter);
-          setDuration(chapter.durationSeconds);
+          setDuration(chapter.durationSeconds || 780);
           const startSecs = parsed.progressSeconds || 0;
           setCurrentTime(startSecs);
           setIsPlaying(true);

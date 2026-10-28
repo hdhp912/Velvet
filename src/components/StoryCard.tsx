@@ -1,27 +1,20 @@
 import React, { useState } from 'react';
-import { Play, Sparkles, BookOpen } from 'lucide-react';
+import { BookOpen, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
 import { Story } from '../types';
-import { useAudio } from '../context/AudioContext';
 
 interface StoryCardProps {
   story: Story;
   onSelect: (storyId: string) => void;
+  onReadChapter?: (storyId: string, chapterId: string) => void;
 }
 
-export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect }) => {
-  const { playChapter, currentStory, isPlaying, togglePlay } = useAudio();
+export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect, onReadChapter }) => {
   const [imageError, setImageError] = useState(false);
 
-  const isCurrentStoryPlaying = currentStory?.id === story.id && isPlaying;
-
-  const handlePlayClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (currentStory?.id === story.id) {
-      togglePlay();
-    } else if (story.chapters.length > 0) {
-      playChapter(story, story.chapters[0]);
-    }
-  };
+  // Calculate average words per chapter
+  const avgWords = story.chapters.length > 0 
+    ? Math.round(story.chapters.reduce((acc, c) => acc + c.wordCount, 0) / story.chapters.length)
+    : 1940;
 
   return (
     <div
@@ -34,7 +27,15 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect }) => {
           <img
             src={story.coverImage}
             alt={story.title}
-            onError={() => setImageError(true)}
+            onError={(e) => {
+              // Try fallback local image before showing placeholder
+              const target = e.currentTarget as HTMLImageElement;
+              if (!target.src.includes('cover_summer_stayed.jpg')) {
+                target.src = '/images/cover_summer_stayed.jpg';
+              } else {
+                setImageError(true);
+              }
+            }}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
@@ -45,20 +46,27 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect }) => {
           </div>
         )}
 
-        {/* Hover Quick-Play Button Overlay */}
-        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center p-4">
+        {/* Hover Quick-Read Overlay */}
+        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center p-4">
           <button
-            onClick={handlePlayClick}
-            aria-label={`Listen to ${story.title}`}
-            className="w-12 h-12 rounded-full bg-[#FAF8F5] text-[#873F55] flex items-center justify-center shadow-md transform transition-transform duration-200 hover:scale-105 active:scale-95"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onReadChapter && story.chapters[0]) {
+                onReadChapter(story.id, story.chapters[0].id);
+              } else {
+                onSelect(story.id);
+              }
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5] text-[#873F55] font-semibold text-xs shadow-md transform transition-transform duration-200 hover:scale-105 active:scale-95"
           >
-            <Play className={`w-5 h-5 ml-0.5 ${isCurrentStoryPlaying ? 'text-[#873F55]' : ''}`} fill="currentColor" />
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Read Chapter 1</span>
           </button>
         </div>
 
         {/* Status / Series indicator */}
         {story.status === 'Completed' ? (
-          <div className="absolute top-2.5 left-2.5 bg-[#39745A]/90 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-[5px] shadow-xs">
+          <div className="absolute top-2.5 left-2.5 bg-[#39745A]/95 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-[5px] shadow-xs">
             Complete · 100% Free
           </div>
         ) : (
@@ -95,10 +103,15 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect }) => {
           {story.synopsis}
         </p>
 
-        {/* Footer info: Chapters count & Narrator */}
+        {/* Footer info: Chapters count & Verified Word Count */}
         <div className="pt-2.5 border-t border-[#F2EEEA] flex items-center justify-between text-[11px] text-[#948982]">
-          <span>{story.publishedChaptersCount} chapters released</span>
-          <span className="font-medium text-[#746B65] truncate max-w-[110px]">{story.narrator.name}</span>
+          <span className="flex items-center gap-1">
+            <FileText className="w-3 h-3 text-[#948982]" />
+            <span>{story.publishedChaptersCount} chapters</span>
+          </span>
+          <span className="font-medium text-[#39745A] bg-[#EAF5EF] px-1.5 py-0.5 rounded text-[10px]">
+            ✓ ~{avgWords.toLocaleString()} words/ch
+          </span>
         </div>
       </div>
     </div>

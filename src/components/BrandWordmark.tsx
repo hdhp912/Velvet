@@ -4,44 +4,57 @@ interface BrandWordmarkProps {
   className?: string;
   onClick?: () => void;
   size?: 'normal' | 'large';
+  showSubtitle?: boolean;
 }
 
-export const BrandWordmark: React.FC<BrandWordmarkProps> = ({ className = '', onClick, size = 'normal' }) => {
+export const BrandWordmark: React.FC<BrandWordmarkProps> = ({
+  className = '',
+  onClick,
+  size = 'normal',
+  showSubtitle = true
+}) => {
   return (
     <div
       onClick={onClick}
-      className={`inline-flex items-center gap-2.5 cursor-pointer select-none group ${className}`}
+      className={`inline-flex items-center gap-3 cursor-pointer select-none group ${className}`}
       role="banner"
     >
-      {/* Restrained line-art symbol: subtle open book with gentle heart page fold */}
-      <svg
-        width={size === 'large' ? '28' : '22'}
-        height={size === 'large' ? '28' : '22'}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-[#873F55] transition-transform duration-200 group-hover:scale-105"
-        aria-hidden="true"
-      >
-        {/* Book spine & pages forming subtle heart curvature at the top crease */}
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        <path d="M12 6.5c-.8-1.5-3-1.8-3.8-.4-.9 1.4.2 3.1 3.8 5.4 3.6-2.3 4.7-4 3.8-5.4-.8-1.4-3-1.1-3.8.4z" />
-      </svg>
-
-      <span
-        className={`font-editorial tracking-tight text-[#292421] transition-colors duration-200 group-hover:text-[#873F55] flex items-baseline gap-1.5 ${
-          size === 'large' ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-[21px]'
+      {/* Warm, friendly logo mark: Parent and child hands holding a sprout of sunshine */}
+      <div
+        className={`rounded-2xl bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400 flex items-center justify-center text-white shadow-sm transition-transform duration-200 group-hover:scale-105 ${
+          size === 'large' ? 'w-12 h-12' : 'w-10 h-10'
         }`}
       >
-        <span>Mysteries Unveiled</span>
-        <span className="font-serif italic text-[0.82em] text-[#873F55] font-normal tracking-normal">
-          by Dino
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={size === 'large' ? 'w-7 h-7' : 'w-6 h-6'}
+        >
+          {/* Sprout & heart warmth */}
+          <path d="M12 21a9 9 0 0 0 9-9c0-4.97-4.03-9-9-9s-9 4.03-9 9a9 9 0 0 0 9 9z" />
+          <path d="M12 8c-1.5 2-3 4-3 6a3 3 0 0 0 6 0c0-2-1.5-4-3-6z" fill="currentColor" fillOpacity="0.25" />
+          <circle cx="12" cy="14" r="1.5" fill="currentColor" />
+        </svg>
+      </div>
+
+      <div className="flex flex-col">
+        <span
+          className={`font-extrabold tracking-tight text-neutral-900 group-hover:text-amber-800 transition-colors leading-tight ${
+            size === 'large' ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-[22px]'
+          }`}
+        >
+          Cùng Con Mỗi Ngày
         </span>
-      </span>
+        {showSubtitle && (
+          <span className="text-[11px] sm:text-xs font-semibold text-amber-700 tracking-wide uppercase">
+            Phát triển toàn diện 2 - 6 tuổi
+          </span>
+        )}
+      </div>
     </div>
   );
 };

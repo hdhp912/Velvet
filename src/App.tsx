@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
-import { AudioProvider, useAudio } from './context/AudioContext';
 import { ToastProvider } from './context/ToastContext';
 import { SAMPLE_STORIES } from './data/sampleStories';
+import { runDailyAutomationCheck } from './data/dailySchedule';
 import { SiteHeader } from './components/SiteHeader';
 import { SiteFooter } from './components/SiteFooter';
 import { HomeView } from './components/HomeView';
@@ -10,15 +10,11 @@ import { BrowseView } from './components/BrowseView';
 import { StoryDetailView } from './components/StoryDetailView';
 import { MembershipView } from './components/MembershipView';
 import { AccountView } from './components/AccountView';
-import { AudioPlayer } from './components/AudioPlayer';
-import { ListeningView } from './components/ListeningView';
 import { AuthModal } from './components/AuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
 import { ChapterReaderView } from './components/ChapterReaderView';
 
 function MainApp() {
-  const { isExpanded } = useAudio();
-
   const [currentTab, setCurrentTab] = useState<
     'home' | 'discover' | 'romance' | 'new-releases' | 'completed' | 'detail' | 'reader' | 'membership' | 'account'
   >('home');
@@ -27,6 +23,11 @@ function MainApp() {
   const [searchQuery, setSearchQuery] = useState('');
   const [moodFilter, setMoodFilter] = useState('');
   const [isAdminActive, setIsAdminActive] = useState(false);
+
+  // Run automated daily chapter release engine check on app load
+  useEffect(() => {
+    runDailyAutomationCheck();
+  }, []);
 
   // Scroll to top on navigation change
   useEffect(() => {
@@ -77,7 +78,6 @@ function MainApp() {
     return (
       <div className="min-h-screen bg-[#FAF8F5]">
         <AdminDashboard onExit={() => setIsAdminActive(false)} />
-        <AudioPlayer />
         <AuthModal />
       </div>
     );
@@ -115,6 +115,7 @@ function MainApp() {
             key={currentTab}
             stories={SAMPLE_STORIES}
             onSelectStory={handleSelectStory}
+            onReadChapter={handleReadChapter}
             initialQuery={searchQuery}
             initialMood={moodFilter}
             initialStatus={currentTab === 'completed' ? 'Completed' : 'All'}
@@ -159,12 +160,6 @@ function MainApp() {
         onOpenAdmin={() => setIsAdminActive(true)}
       />
 
-      {/* Persistent Audio Player (bottom bar) */}
-      <AudioPlayer />
-
-      {/* Distraction-Free Full-Screen Listening Modal */}
-      {isExpanded && <ListeningView />}
-
       {/* Sign-in / Sign-up / Password Modal */}
       <AuthModal />
     </div>
@@ -174,11 +169,9 @@ function MainApp() {
 export default function App() {
   return (
     <AuthProvider>
-      <AudioProvider>
-        <ToastProvider>
-          <MainApp />
-        </ToastProvider>
-      </AudioProvider>
+      <ToastProvider>
+        <MainApp />
+      </ToastProvider>
     </AuthProvider>
   );
 }

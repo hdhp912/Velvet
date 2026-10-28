@@ -4,14 +4,13 @@ import {
   Sparkles,
   Heart,
   Clock,
-  Play,
   LogOut,
   ShieldCheck,
   CheckCircle2,
   BookOpen,
+  ArrowRight,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useAudio } from '../context/AudioContext';
 import { SAMPLE_STORIES } from '../data/sampleStories';
 import { useToast } from '../context/ToastContext';
 
@@ -21,26 +20,19 @@ interface AccountViewProps {
   onReadChapter?: (storyId: string, chapterId: string) => void;
 }
 
-const formatTime = (seconds: number) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-};
-
 export const AccountView: React.FC<AccountViewProps> = ({
   onSelectStory,
   onNavigateMembership,
   onReadChapter,
 }) => {
   const { user, signOut, togglePremiumMembership } = useAuth();
-  const { continueListening } = useAudio();
   const { showToast } = useToast();
 
   if (!user) {
     return (
       <div className="max-w-[800px] mx-auto px-4 py-16 text-center">
-        <h2 className="font-editorial text-2xl text-[#292421] mb-2">Listener Account</h2>
-        <p className="text-sm text-[#746B65] mb-6">Please sign in to view your profile and listening history.</p>
+        <h2 className="font-editorial text-2xl text-[#292421] mb-2">Reader Account</h2>
+        <p className="text-sm text-[#746B65] mb-6">Please sign in to view your profile and reading progress.</p>
       </div>
     );
   }
@@ -73,7 +65,7 @@ export const AccountView: React.FC<AccountViewProps> = ({
               onClick={() => {
                 togglePremiumMembership();
                 showToast(
-                  user.isPremium ? 'Switched to Free Tier' : 'Switched to Premium Member Tier',
+                  user.isPremium ? 'Switched to Free Tier' : 'Switched to Premium VIP Tier',
                   'info'
                 );
               }}
@@ -106,20 +98,20 @@ export const AccountView: React.FC<AccountViewProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-[#292421]">
-                  {user.isPremium ? 'Mysteries Unveiled by Dino Premium' : 'Free Listener Account'}
+                  {user.isPremium ? 'Mysteries Unveiled by Dino Premium VIP' : 'Free Reader Account'}
                 </span>
                 <span
                   className={`text-[10px] font-semibold px-2 py-0.5 rounded-[4px] uppercase tracking-wider ${
                     user.isPremium ? 'bg-[#873F55] text-white' : 'bg-[#E7E0DA] text-[#746B65]'
                   }`}
                 >
-                  {user.isPremium ? 'Active' : 'Basic'}
+                  {user.isPremium ? 'VIP Active' : 'Basic Free'}
                 </span>
               </div>
               <p className="text-xs text-[#746B65] mt-0.5">
                 {user.isPremium
-                  ? 'Unlimited access to all serialized sagas, narrator recordings, and daily releases.'
-                  : 'Includes free preview chapters. Upgrade to unlock full series.'}
+                  ? 'Unlimited access to all serialized sagas, long-form chapters (>1,500 words), and daily automated releases.'
+                  : 'Includes 20 complete 100% free sagas and chapters 1–10 free on serialized romance. Upgrade to unlock chapters 11+.'}
               </p>
             </div>
           </div>
@@ -132,12 +124,12 @@ export const AccountView: React.FC<AccountViewProps> = ({
                 : 'bg-[#873F55] text-white hover:bg-[#6F3044]'
             }`}
           >
-            {user.isPremium ? 'Manage Subscription' : 'Upgrade to Premium'}
+            {user.isPremium ? 'Manage Membership' : 'Upgrade to VIP'}
           </button>
         </div>
       </div>
 
-      {/* Listening History & Saved Stories Tabs */}
+      {/* Reading Progress & Saved Stories */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Saved Library */}
         <div className="bg-white border border-[#E7E0DA] rounded-[16px] p-6 shadow-xs">
@@ -176,11 +168,16 @@ export const AccountView: React.FC<AccountViewProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      continueListening(story.id);
+                      if (onReadChapter && story.chapters[0]) {
+                        onReadChapter(story.id, story.chapters[0].id);
+                      } else {
+                        onSelectStory(story.id);
+                      }
                     }}
-                    className="w-8 h-8 rounded-full bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white flex items-center justify-center text-[#746B65] shrink-0 transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white text-[#746B65] shrink-0 transition-colors"
                   >
-                    <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Read</span>
                   </button>
                 </div>
               ))}
@@ -190,14 +187,14 @@ export const AccountView: React.FC<AccountViewProps> = ({
           )}
         </div>
 
-        {/* Active Listening Progress */}
+        {/* Active Reading Progress */}
         <div className="bg-white border border-[#E7E0DA] rounded-[16px] p-6 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-editorial text-xl text-[#292421] flex items-center gap-2">
               <Clock className="w-4 h-4 text-[#873F55]" />
-              <span>Recent Listening</span>
+              <span>Recent Reading Bookmarks</span>
             </h3>
-            <span className="text-xs text-[#948982]">Resumes automatically</span>
+            <span className="text-xs text-[#948982]">Resumes chapter text</span>
           </div>
 
           <div className="divide-y divide-[#F2EEEA]">
@@ -205,7 +202,7 @@ export const AccountView: React.FC<AccountViewProps> = ({
               const story = SAMPLE_STORIES.find((s) => s.id === item.storyId);
               if (!story) return null;
 
-              const progress = Math.round((item.progressSeconds / item.totalSeconds) * 100);
+              const chapter = story.chapters.find((c) => c.id === item.chapterId) || story.chapters[0];
 
               return (
                 <div key={item.chapterId} className="py-3.5">
@@ -216,32 +213,29 @@ export const AccountView: React.FC<AccountViewProps> = ({
                     >
                       {story.title}
                     </h4>
-                    <span className="text-[11px] text-[#948982] tabular-nums">
-                      {formatTime(item.progressSeconds)} / {formatTime(item.totalSeconds)}
+                    <span className="text-[11px] text-[#39745A] font-medium bg-[#EAF5EF] px-1.5 py-0.5 rounded">
+                      ✓ {chapter?.wordCount || 1940} words
                     </span>
                   </div>
-                  <p className="text-xs text-[#746B65] mb-2">Chapter {item.chapterNumber}</p>
-                  
-                  {/* Progress Bar */}
-                  <div className="w-full h-1.5 bg-[#E7E0DA] rounded-full overflow-hidden mb-2.5">
-                    <div className="h-full bg-[#873F55]" style={{ width: `${progress}%` }} />
-                  </div>
+                  <p className="text-xs text-[#746B65] mb-2">
+                    Chapter {item.chapterNumber}: {chapter?.title || 'Chapter ' + item.chapterNumber}
+                  </p>
 
                   <div className="flex items-center gap-4">
                     <button
-                      onClick={() => continueListening(story.id)}
+                      onClick={() => onReadChapter?.(story.id, item.chapterId)}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#873F55] hover:text-[#6F3044]"
                     >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Resume Audio</span>
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Resume Chapter {item.chapterNumber}</span>
                     </button>
 
                     <button
-                      onClick={() => onReadChapter?.(story.id, item.chapterId)}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#746B65] hover:text-[#292421]"
+                      onClick={() => onSelectStory(story.id)}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[#746B65] hover:text-[#292421]"
                     >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>Read Text</span>
+                      <span>Story Index</span>
+                      <ArrowRight className="w-3 h-3" />
                     </button>
                   </div>
                 </div>

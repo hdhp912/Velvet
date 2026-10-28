@@ -21,4 +21,15 @@ export const BOOK_COVERS = {
   vanishedDawn: rosewoodTrainCover,
   glassEnigma: neverSaidCover,
   whisperingGallery: heroCover,
+  // 10 Additional New Free Sagas
+  alchemistDiary: contractWinterCover,
+  venetianMask: heroCover,
+  thornfieldHall: neverSaidCover,
+  silverCompass: rosewoodTrainCover,
+  midnightWaltz: summerStayedCover,
+  ravenHeir: contractWinterCover,
+  amberGrove: rosewoodTrainCover,
+  phantomBelleIsle: summerStayedCover,
+  moonlitGarden: neverSaidCover,
+  stolenPortrait: heroCover,
 };

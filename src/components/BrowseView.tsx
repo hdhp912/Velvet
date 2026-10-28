@@ -6,21 +6,23 @@ import { StoryCard } from './StoryCard';
 interface BrowseViewProps {
   stories: Story[];
   onSelectStory: (id: string) => void;
+  onReadChapter?: (storyId: string, chapterId: string) => void;
   initialQuery?: string;
   initialMood?: string;
-  initialStatus?: 'All' | 'Ongoing' | 'Completed';
+  initialStatus?: 'All' | 'Ongoing Serial' | 'Completed' | 'Ongoing';
 }
 
 export const BrowseView: React.FC<BrowseViewProps> = ({
   stories,
   onSelectStory,
+  onReadChapter,
   initialQuery = '',
   initialMood = '',
   initialStatus = 'All',
 }) => {
   const [search, setSearch] = useState(initialQuery);
   const [selectedMood, setSelectedMood] = useState(initialMood);
-  const [selectedStatus, setSelectedStatus] = useState<'All' | 'Ongoing' | 'Completed'>(initialStatus);
+  const [selectedStatus, setSelectedStatus] = useState<string>(initialStatus);
   const [selectedAccess, setSelectedAccess] = useState<'All' | 'Free' | 'Premium'>('All');
   const [sortBy, setSortBy] = useState<'updated' | 'chapters' | 'title'>('updated');
 
@@ -62,13 +64,19 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
       }
 
       // Status filter
-      if (selectedStatus !== 'All' && story.status !== selectedStatus) {
-        return false;
+      if (selectedStatus !== 'All') {
+        if (selectedStatus === 'Completed' && story.status !== 'Completed') return false;
+        if (
+          (selectedStatus === 'Ongoing' || selectedStatus === 'Ongoing Serial') &&
+          story.status !== 'Ongoing Serial'
+        ) {
+          return false;
+        }
       }
 
       // Access filter (has free chapters or strictly premium)
       if (selectedAccess === 'Free') {
-        const hasFree = story.chapters.some((c) => !c.isPremium);
+        const hasFree = story.status === 'Completed' || story.chapters.some((c) => !c.isPremium);
         if (!hasFree) return false;
       } else if (selectedAccess === 'Premium') {
         const hasPremium = story.chapters.some((c) => c.isPremium);
@@ -100,10 +108,10 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-editorial text-3xl sm:text-4xl text-[#292421] mb-2">
-          Discover Romance Audiobooks
+          Discover Stories &amp; Sagas
         </h1>
         <p className="text-sm text-[#746B65]">
-          Explore serialized romance sagas, intimate slow burns, and newly recorded chapters.
+          Explore 20 complete 100% free sagas, serialized romances, and newly published chapters (&gt;1,500 words per chapter).
         </p>
       </div>
 
@@ -129,12 +137,12 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
               <span className="text-xs text-[#746B65] font-medium">Status:</span>
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value as any)}
+                onChange={(e) => setSelectedStatus(e.target.value)}
                 className="bg-[#FAF8F5] border border-[#E7E0DA] rounded-lg px-2.5 py-2 text-xs font-medium text-[#292421] focus:outline-hidden"
               >
                 <option value="All">All statuses</option>
-                <option value="Ongoing">Ongoing</option>
-                <option value="Completed">Completed</option>
+                <option value="Completed">Completed (20 Free Sagas)</option>
+                <option value="Ongoing Serial">Ongoing Serials (Ch 1–10 Free)</option>
               </select>
             </div>
 
@@ -147,8 +155,8 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
                 className="bg-[#FAF8F5] border border-[#E7E0DA] rounded-lg px-2.5 py-2 text-xs font-medium text-[#292421] focus:outline-hidden"
               >
                 <option value="All">All chapters</option>
-                <option value="Free">Includes Free</option>
-                <option value="Premium">Premium</option>
+                <option value="Free">100% Free / Includes Free</option>
+                <option value="Premium">VIP / Premium</option>
               </select>
             </div>
 
@@ -178,7 +186,7 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
           </div>
         </div>
 
-        {/* Mood / Trope Tag Bar (Interactive filter tabs) */}
+        {/* Mood / Trope Tag Bar */}
         <div className="mt-4 pt-4 border-t border-[#F2EEEA] flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <span className="text-xs text-[#948982] shrink-0 mr-1 flex items-center gap-1">
             <Filter className="w-3 h-3" /> Mood:
@@ -210,11 +218,11 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
         </span>
       </div>
 
-      {/* Story Grid (4 cols on wide desktop, 3 on md, 2 on sm, 1 on xs) */}
+      {/* Story Grid */}
       {filteredStories.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredStories.map((story) => (
-            <StoryCard key={story.id} story={story} onSelect={onSelectStory} />
+            <StoryCard key={story.id} story={story} onSelect={onSelectStory} onReadChapter={onReadChapter} />
           ))}
         </div>
       ) : (
@@ -222,7 +230,7 @@ export const BrowseView: React.FC<BrowseViewProps> = ({
         <div className="p-12 text-center bg-white border border-[#E7E0DA] rounded-[16px]">
           <p className="font-editorial text-xl text-[#292421] mb-2">No matching stories found</p>
           <p className="text-sm text-[#746B65] max-w-md mx-auto mb-5">
-            We couldn't find any audiobooks matching your current search or filter criteria. Try resetting your filters to explore the full library.
+            We couldn't find any stories matching your current search or filter criteria. Try resetting your filters to explore the full library of 24 stories.
           </p>
           <button
             onClick={handleResetFilters}

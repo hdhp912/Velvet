@@ -13,20 +13,21 @@ export type Genre =
   | 'Romantic Suspense'
   | 'Gothic Romance';
 
-export type StoryStatus = 'Ongoing' | 'Completed';
+export type StoryStatus = 'Ongoing' | 'Completed' | 'Ongoing Serial';
 
 export interface Chapter {
   id: string;
   storyId: string;
   number: number;
   title: string;
-  durationSeconds: number; // e.g. 780 for 13 mins
-  publishedAt: string; // ISO date
+  publishedAt: string; // ISO date or release note
   isPremium: boolean;
   wordCount: number;
+  readingTimeMinutes?: number;
   synopsis?: string;
   proseExcerpt: string;
-  audioUrl?: string; // fallback synthetic voice or audio stream
+  durationSeconds?: number;
+  audioUrl?: string;
 }
 
 export interface Narrator {
@@ -41,7 +42,7 @@ export interface Story {
   id: string;
   title: string;
   author: string;
-  narrator: Narrator;
+  narrator?: Narrator;
   coverImage: string;
   synopsis: string;
   genre: Genre;
@@ -49,21 +50,28 @@ export interface Story {
   status: StoryStatus;
   totalPlannedChapters: number;
   publishedChaptersCount: number;
-  totalDurationSeconds: number;
+  totalWords?: number;
+  totalReadingTimeMinutes?: number;
+  totalDurationSeconds?: number;
   isFeatured?: boolean;
   releasedAt: string;
   updatedAt: string;
   chapters: Chapter[];
 }
 
-export interface UserListeningProgress {
+export interface UserReadingProgress {
   storyId: string;
   chapterId: string;
   chapterNumber: number;
-  progressSeconds: number;
-  totalSeconds: number;
-  lastListenedAt: string;
+  progressPercentage?: number;
+  lastReadAt?: string;
+  progressSeconds?: number;
+  totalSeconds?: number;
+  lastListenedAt?: string;
 }
+
+// Backward compatibility alias
+export type UserListeningProgress = UserReadingProgress;
 
 export interface UserProfile {
   id: string;
@@ -72,8 +80,26 @@ export interface UserProfile {
   isPremium: boolean;
   membershipPlan?: 'free' | 'monthly' | 'annual';
   memberSince?: string;
-  listeningHistory: UserListeningProgress[];
+  listeningHistory: UserReadingProgress[];
+  readingHistory?: UserReadingProgress[];
   favorites: string[]; // storyIds
+}
+
+export interface DailyScheduleItem {
+  id: string;
+  storyId: string;
+  storyTitle: string;
+  chapterNumber: number;
+  chapterTitle: string;
+  date: string;
+  wordCount: number;
+  status: 'released' | 'queued';
+  isPremium: boolean;
+  estimatedReadMinutes: number;
+  releaseDate?: string;
+  isReleased?: boolean;
+  autoScheduledTime?: string;
+  summary?: string;
 }
 
 export interface AdminJob {
@@ -81,7 +107,7 @@ export interface AdminJob {
   storyId: string;
   storyTitle: string;
   chapterNumber: number;
-  type: 'text_generation' | 'tts_narration' | 'validation' | 'publishing';
+  type: 'text_generation' | 'content_expansion' | 'validation' | 'publishing' | 'tts_narration';
   status: 'pending' | 'processing' | 'completed' | 'failed';
   startedAt: string;
   progress: number;

@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
-  Play,
-  Pause,
-  Headphones,
   BookOpen,
   ChevronLeft,
   ChevronRight,
@@ -12,10 +9,11 @@ import {
   Type,
   Sun,
   Moon,
-  Volume2,
+  CheckCircle2,
+  Clock,
+  FileText,
 } from 'lucide-react';
 import { Story, Chapter } from '../types';
-import { useAudio } from '../context/AudioContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
@@ -37,18 +35,12 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
   onSelectChapter,
   onNavigateMembership,
 }) => {
-  const { playChapter, currentStory, currentChapter, isPlaying, togglePlay } = useAudio();
   const { user, togglePremiumMembership } = useAuth();
   const { showToast } = useToast();
 
   const [theme, setTheme] = useState<ReaderTheme>('ivory');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [fontFamily, setFontFamily] = useState<'serif' | 'sans'>('serif');
-
-  const isCurrentAudioPlaying =
-    currentStory?.id === story.id && currentChapter?.id === chapter.id && isPlaying;
-  const isCurrentAudioLoaded =
-    currentStory?.id === story.id && currentChapter?.id === chapter.id;
 
   const isLocked = chapter.isPremium && !user?.isPremium;
 
@@ -61,22 +53,6 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
   const prevChapter = currentIndex > 0 ? story.chapters[currentIndex - 1] : null;
   const nextChapter =
     currentIndex < story.chapters.length - 1 ? story.chapters[currentIndex + 1] : null;
-
-  const handleToggleAudio = () => {
-    if (chapter.isPremium && !user?.isPremium) {
-      togglePremiumMembership();
-      showToast('⭐ Premium VIP Mode Activated: Playing audio for Chapter ' + chapter.number, 'success');
-      playChapter(story, chapter);
-      return;
-    }
-
-    if (isCurrentAudioLoaded) {
-      togglePlay();
-    } else {
-      playChapter(story, chapter);
-      showToast(`🎧 Now narrating Chapter ${chapter.number}: ${chapter.title}`, 'info');
-    }
-  };
 
   const handleUnlockVip = () => {
     togglePremiumMembership();
@@ -131,6 +107,7 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
 
   // Split prose into readable paragraphs
   const paragraphs = chapter.proseExcerpt.split('\n\n').filter((p) => p.trim().length > 0);
+  const readingTimeMin = Math.ceil(chapter.wordCount / 220);
 
   return (
     <div className={`min-h-screen ${currentTheme.bg} transition-colors duration-200 pb-28`}>
@@ -157,31 +134,8 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
             </p>
           </div>
 
-          {/* Right Controls: Play Audio & Reading Settings */}
+          {/* Right Controls: Reading Settings */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Audio narration button */}
-            <button
-              onClick={handleToggleAudio}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-xs transition-all ${
-                isCurrentAudioPlaying
-                  ? 'bg-[#873F55] text-white animate-pulse'
-                  : 'bg-[#873F55] hover:bg-[#6F3044] text-white'
-              }`}
-              title="Listen to voice narration"
-            >
-              {isCurrentAudioPlaying ? (
-                <>
-                  <Pause className="w-3.5 h-3.5 fill-current" />
-                  <span>Pause Audio</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                  <span>Play Audio</span>
-                </>
-              )}
-            </button>
-
             {/* Reading preferences buttons */}
             <div className="flex items-center border rounded-lg overflow-hidden border-[#D6CCC4]/50 bg-white/40">
               {/* Font size toggle */}
@@ -246,48 +200,31 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
             Chapter {chapter.number}: {chapter.title}
           </h1>
 
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-xs text-[#746B65]">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2 text-xs text-[#746B65]">
             <span>Written by <strong className="text-[#292421]">{story.author}</strong></span>
             <span>·</span>
-            <span>Narrated by {story.narrator.name}</span>
+            <span className="inline-flex items-center gap-1 text-[#39745A] font-semibold bg-[#EAF5EF] px-2 py-0.5 rounded">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {chapter.wordCount.toLocaleString()} words (Long-form &gt;1,500)
+            </span>
             <span>·</span>
-            <span>{chapter.wordCount} words</span>
+            <span className="inline-flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-[#948982]" />
+              ~{readingTimeMin} min read
+            </span>
             <span>·</span>
             <span>Published {chapter.publishedAt}</span>
           </div>
 
-          {/* Quick Audio Bar in Reader Header */}
-          <div className="mt-5 p-3.5 bg-white/70 border border-[#E7E0DA] rounded-[10px] flex items-center justify-between gap-3 shadow-2xs">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-[#F4E8EC] text-[#873F55] flex items-center justify-center shrink-0">
-                <Volume2 className="w-4 h-4" />
-              </div>
-              <div className="min-w-0 text-xs">
-                <p className="font-medium text-[#292421] truncate">
-                  {isCurrentAudioPlaying ? 'Narration is currently playing' : 'Audio narration is available'}
-                </p>
-                <p className="text-[#948982] truncate">
-                  Voice: {story.narrator.name} ({story.narrator.accent} accent)
-                </p>
-              </div>
+          {/* Long-form editorial notice */}
+          <div className="mt-4 p-3 bg-white/70 border border-[#E7E0DA] rounded-lg flex items-center justify-between text-xs text-[#746B65]">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-[#873F55] shrink-0" />
+              <span>Full unabridged chapter text — comfortable long-form reading experience.</span>
             </div>
-
-            <button
-              onClick={handleToggleAudio}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#873F55] hover:bg-[#6F3044] text-white text-xs font-semibold rounded-md transition-colors shrink-0 shadow-2xs"
-            >
-              {isCurrentAudioPlaying ? (
-                <>
-                  <Pause className="w-3.5 h-3.5 fill-current" />
-                  <span>Pause</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                  <span>Listen</span>
-                </>
-              )}
-            </button>
+            <span className="text-[11px] font-mono text-[#873F55] bg-[#F4E8EC] px-2 py-0.5 rounded font-medium shrink-0 hidden sm:inline">
+              Verified &gt;1,500 Words
+            </span>
           </div>
         </div>
 
@@ -315,7 +252,7 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
                   Unlock Chapter {chapter.number}
                 </h3>
                 <p className="text-sm text-[#746B65] max-w-md mx-auto mb-6 leading-relaxed">
-                  This chapter (Chapter {chapter.number}) is part of the Mysteries Unveiled by Dino Premium serial catalog. Chapters 1 through 10 are completely free; unlock instant access to continue reading and listening.
+                  This chapter (Chapter {chapter.number}) is part of the Mysteries Unveiled by Dino Premium serial catalog. Chapters 1 through 10 are completely free; unlock instant access to continue reading.
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
@@ -384,7 +321,7 @@ export const ChapterReaderView: React.FC<ChapterReaderViewProps> = ({
               >
                 {story.chapters.map((c) => (
                   <option key={c.id} value={c.id}>
-                    Chapter {c.number}: {c.title} {c.publishedAt.includes('Today') ? '★ New Today' : ''}
+                    Chapter {c.number}: {c.title} ({c.wordCount} words) {c.publishedAt.includes('Today') ? '★ New Today' : ''}
                   </option>
                 ))}
               </select>

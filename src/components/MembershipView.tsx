@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Sparkles, Shield, ArrowRight } from 'lucide-react';
+import { Check, Sparkles, Shield, ArrowRight, BookOpen, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
@@ -16,9 +16,9 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
     if (plan === 'free') {
       if (user?.isPremium) {
         togglePremiumMembership();
-        showToast('Switched to Free Listener plan');
+        showToast('Switched to Free Reader plan');
       } else {
-        showToast('You are currently on the Free Listener plan');
+        showToast('You are currently on the Free Reader plan');
       }
     } else {
       upgradeToPremium(billingCycle);
@@ -42,7 +42,7 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
           Make room for another mystery.
         </h1>
         <p className="text-sm sm:text-base text-[#746B65] leading-relaxed">
-          Enjoy 10 complete mystery sagas 100% free, experience the first 10 chapters of all serialized romances at no cost, and unlock premium releases without interruption.
+          Enjoy 20 complete mystery sagas 100% free, experience the first 10 chapters of all serialized romances at no cost, and unlock premium daily chapter releases without interruption.
         </p>
 
         {/* Billing Cycle Toggle */}
@@ -70,13 +70,13 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
         </div>
       </div>
 
-      {/* Pricing Cards Comparison (Stack vertically on mobile, 2 columns on desktop) */}
+      {/* Pricing Cards Comparison */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch mb-14">
-        {/* Tier 1: Free Listener */}
+        {/* Tier 1: Free Reader */}
         <div className="bg-white border border-[#E7E0DA] rounded-[12px] p-6 sm:p-8 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-editorial text-2xl text-[#292421]">Free Listener</h3>
+              <h3 className="font-editorial text-2xl text-[#292421]">Free Reader</h3>
               {!user?.isPremium && (
                 <span className="text-xs font-medium text-[#746B65] bg-[#F2EEEA] px-2.5 py-1 rounded-[5px]">
                   Current Plan
@@ -85,7 +85,7 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
             </div>
 
             <p className="text-xs text-[#746B65] mb-6">
-              Generous free access: enjoy 10 complete mystery sagas and the first 10 chapters of every serial.
+              Generous free access: enjoy 20 complete mystery sagas and the first 10 chapters of every serialized romance.
             </p>
 
             <div className="flex items-baseline gap-1 mb-8">
@@ -97,19 +97,19 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
             <ul className="space-y-3.5 text-xs sm:text-sm text-[#746B65] mb-8">
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span><strong>Chapters 1 to 10 free</strong> on all serialized romance stories</span>
+                <span><strong>20 complete mystery sagas</strong> 100% free with full chapters</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span><strong>10 complete mystery sagas</strong> 100% free with full text & audio</span>
+                <span><strong>Chapters 1 to 10 free</strong> on all serialized romance sagas</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Full access to voice narration & audio scrubber player</span>
+                <span>Every chapter strictly exceeds <strong>1,500 words</strong> for deep reading</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Synchronized reading mode text with exact word count</span>
+                <span>Reading preferences: Ivory, White, Sepia, and Dark typography themes</span>
               </li>
             </ul>
           </div>
@@ -127,10 +127,10 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
           </button>
         </div>
 
-        {/* Tier 2: Premium Member (Emphasized with thin burgundy border) */}
+        {/* Tier 2: Premium Member */}
         <div className="bg-white border-2 border-[#873F55] rounded-[12px] p-6 sm:p-8 flex flex-col justify-between shadow-[0_6px_24px_rgba(135,63,85,0.06)] relative">
           <div className="absolute -top-3 left-6 bg-[#873F55] text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-[5px] uppercase tracking-wider">
-            Most Access
+            Unlimited Reading
           </div>
 
           <div>
@@ -144,7 +144,7 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
             </div>
 
             <p className="text-xs text-[#746B65] mb-6">
-              Complete, unrestricted immersion in all serialized romance series.
+              Complete, unrestricted access to all ongoing and upcoming 100-chapter sagas.
             </p>
 
             <div className="flex items-baseline gap-1 mb-8">
@@ -160,23 +160,23 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
             <ul className="space-y-3.5 text-xs sm:text-sm text-[#292421] mb-8">
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Unlimited listening across all 100-chapter sagas</span>
+                <span><strong>Unlimited access to chapters 11+</strong> across all serialized sagas</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Daily automated chapter releases the moment they drop</span>
+                <span><strong>Daily automated releases</strong> unlocked at 06:00 UTC immediately</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Exclusive narrator performances & warm acoustic mix</span>
+                <span>All 20 complete 100% free sagas + all premium serialized releases</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Full reading mode with chapter prose and continuity notes</span>
+                <span>Full unabridged chapters (&gt;1,500 words/ch) with reading continuity bookmarks</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check className="w-4 h-4 text-[#873F55] shrink-0 mt-0.5" />
-                <span>Cancel online anytime with no cancellation fees</span>
+                <span>Cancel online anytime with no hidden lock-in or cancellation fees</span>
               </li>
             </ul>
           </div>
@@ -197,7 +197,7 @@ export const MembershipView: React.FC<MembershipViewProps> = ({ onExploreStories
           <Shield className="w-5 h-5 text-[#873F55] shrink-0" />
           <div>
             <strong className="text-[#292421] block">Cancel whenever you like</strong>
-            Subscriptions can be canceled instantly in your Account Settings. Your access remains active until the end of the billing period.
+            Subscriptions can be canceled anytime in your Account Settings. Your reading access remains active until the end of the billing period.
           </div>
         </div>
         <button

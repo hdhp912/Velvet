@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import {
-  Play,
-  Pause,
-  Clock,
   Sparkles,
   Lock,
   Heart,
   Share2,
   BookOpen,
   ArrowLeft,
+  FileText,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
 import { Story, Chapter } from '../types';
-import { useAudio } from '../context/AudioContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
@@ -22,49 +21,20 @@ interface StoryDetailViewProps {
   onReadChapter: (chapter: Chapter) => void;
 }
 
-const formatDuration = (totalSeconds: number) => {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  if (hours > 0) {
-    return `${hours} hr ${minutes} min`;
-  }
-  return `${minutes} min`;
-};
-
-const formatTime = (seconds: number) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-};
-
 export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
   story,
   onBack,
   onNavigateMembership,
   onReadChapter,
 }) => {
-  const { playChapter, currentStory, currentChapter, isPlaying, togglePlay } = useAudio();
   const { user, toggleFavorite, togglePremiumMembership } = useAuth();
   const { showToast } = useToast();
 
   const [imageError, setImageError] = useState(false);
-
   const isFavorite = user?.favorites.includes(story.id);
 
-  const handlePlayChapter = (chapter: Chapter) => {
-    if (chapter.isPremium && !user?.isPremium) {
-      togglePremiumMembership();
-      showToast('⭐ Premium VIP Mode Activated: Playing Chapter ' + chapter.number, 'success');
-      playChapter(story, chapter);
-      return;
-    }
-
-    if (currentStory?.id === story.id && currentChapter?.id === chapter.id) {
-      togglePlay();
-    } else {
-      playChapter(story, chapter);
-    }
-  };
+  const totalWords = story.chapters.reduce((acc, c) => acc + c.wordCount, 0);
+  const totalReadingMinutes = Math.ceil(totalWords / 220);
 
   const handleShare = () => {
     navigator.clipboard?.writeText(window.location.href);
@@ -91,7 +61,14 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
               <img
                 src={story.coverImage}
                 alt={story.title}
-                onError={() => setImageError(true)}
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes('cover_summer_stayed.jpg')) {
+                    target.src = '/images/cover_summer_stayed.jpg';
+                  } else {
+                    setImageError(true);
+                  }
+                }}
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
@@ -104,36 +81,41 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
             )}
           </div>
 
-          {/* Quick Stats Box */}
-          <div className="mt-4 p-4 bg-white border border-[#E7E0DA] rounded-[10px] space-y-2 text-xs text-[#746B65]">
-            <div className="flex justify-between">
+          {/* Quick Reading Stats Box */}
+          <div className="mt-4 p-4 bg-white border border-[#E7E0DA] rounded-[10px] space-y-2.5 text-xs text-[#746B65]">
+            <div className="flex justify-between items-center">
               <span>Status</span>
-              <span className="font-medium text-[#292421]">{story.status}</span>
+              <span className="font-semibold text-[#292421]">{story.status}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span>Published Chapters</span>
-              <span className="font-medium text-[#292421] tabular-nums">
+              <span className="font-semibold text-[#292421] tabular-nums">
                 {story.publishedChaptersCount} of {story.totalPlannedChapters}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span>Total Audio Duration</span>
-              <span className="font-medium text-[#292421]">{formatDuration(story.totalDurationSeconds)}</span>
+            <div className="flex justify-between items-center">
+              <span>Total Word Count</span>
+              <span className="font-semibold text-[#873F55] tabular-nums">
+                {totalWords.toLocaleString()} words
+              </span>
             </div>
-            <div className="flex justify-between">
-              <span>Narrator</span>
-              <span className="font-medium text-[#292421]">{story.narrator.name}</span>
+            <div className="flex justify-between items-center">
+              <span>Estimated Reading Time</span>
+              <span className="font-semibold text-[#292421]">~{totalReadingMinutes} minutes</span>
             </div>
-            <div className="flex justify-between">
-              <span>Accent & Voice</span>
-              <span className="font-medium text-[#292421]">{story.narrator.accent} ({story.narrator.tone})</span>
+            <div className="flex justify-between items-center">
+              <span>Chapter Length Standard</span>
+              <span className="font-semibold text-[#39745A] flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>&gt;1,500 words / ch</span>
+              </span>
             </div>
           </div>
         </div>
 
         {/* Right Column: Title, Metadata, Actions, Synopsis */}
         <div className="md:col-span-7 lg:col-span-8 flex flex-col">
-          {/* Tropes / Metadata as clean unboxed text */}
+          {/* Tropes / Metadata */}
           <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#873F55] mb-2">
             <span>{story.genre}</span>
             {story.tropes.map((trope) => (
@@ -152,31 +134,14 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
             Written by <span className="text-[#292421] font-medium">{story.author}</span> · Mysteries Unveiled by Dino Production
           </p>
 
-          {/* Action Row: Read Chapter text as primary, Listen audio as dedicated secondary */}
+          {/* Action Row: Read Chapter primary */}
           <div className="flex flex-wrap items-center gap-3 mb-8">
             <button
               onClick={() => onReadChapter(story.chapters[0])}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#873F55] text-white text-sm font-semibold rounded-lg hover:bg-[#6F3044] transition-colors shadow-xs"
+              className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#873F55] text-white text-sm font-semibold rounded-lg hover:bg-[#6F3044] transition-colors shadow-xs"
             >
               <BookOpen className="w-4 h-4" />
-              <span>Read Chapter 1</span>
-            </button>
-
-            <button
-              onClick={() => handlePlayChapter(story.chapters[0])}
-              className="inline-flex items-center gap-2 px-5 py-3 bg-white border border-[#D6CCC4] text-[#292421] hover:border-[#873F55] hover:text-[#873F55] text-sm font-semibold rounded-lg transition-colors shadow-2xs"
-            >
-              {currentStory?.id === story.id && isPlaying ? (
-                <>
-                  <Pause className="w-4 h-4 fill-current text-[#873F55]" />
-                  <span>Pause Audio</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-current ml-0.5 text-[#873F55]" />
-                  <span>Listen to Audio</span>
-                </>
-              )}
+              <span>Read Chapter 1 ({story.chapters[0]?.wordCount.toLocaleString()} words)</span>
             </button>
 
             <button
@@ -220,8 +185,8 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                 </span>
                 <span className="text-[#746B65]">
                   {story.status === 'Completed'
-                    ? 'All chapters of this saga are 100% free to read and listen with full audio.'
-                    : 'Chapters 1 through 10 are completely free to read and listen. Only Chapter 11+ requires membership.'}
+                    ? 'All chapters of this saga are 100% free to read with verified long-form depth (>1500 words per chapter).'
+                    : 'Chapters 1 through 10 are completely free to read. Only Chapter 11+ requires membership.'}
                 </span>
               </div>
             </div>
@@ -254,96 +219,85 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
           <div>
             <h2 className="font-editorial text-2xl text-[#292421]">Chapters</h2>
             <p className="text-xs text-[#746B65] mt-0.5">
-              Click any chapter to read the text. Tap the play button to listen to voice narration.
+              Select any chapter to read. Every chapter is guaranteed over 1,500 words.
             </p>
           </div>
-          <span className="text-xs text-[#948982]">
-            {story.chapters.length} available
+          <span className="text-xs font-medium text-[#873F55] bg-[#F4E8EC] px-2.5 py-1 rounded-md">
+            {story.chapters.length} chapters available · All &gt;1,500 words
           </span>
         </div>
 
         {/* Chapter List */}
         <div className="bg-white border border-[#E7E0DA] rounded-[12px] divide-y divide-[#F2EEEA] overflow-hidden">
           {story.chapters.map((chapter) => {
-            const isPlayingThis =
-              currentStory?.id === story.id && currentChapter?.id === chapter.id && isPlaying;
-            const isCurrent =
-              currentStory?.id === story.id && currentChapter?.id === chapter.id;
             const isLocked = chapter.isPremium && !user?.isPremium;
 
             return (
               <div
                 key={chapter.id}
                 onClick={() => onReadChapter(chapter)}
-                className={`p-4 sm:px-6 sm:py-4 flex items-center justify-between gap-4 cursor-pointer transition-colors group ${
-                  isCurrent ? 'bg-[#F4E8EC]/80' : 'hover:bg-[#FAF8F5]'
-                }`}
+                className="p-4 sm:px-6 sm:py-4 flex items-center justify-between gap-4 cursor-pointer transition-colors group hover:bg-[#FAF8F5]"
                 title="Click to open and read chapter text"
               >
-                <div className="flex items-center gap-4 min-w-0">
-                  {/* Dedicated Audio Play / Pause Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePlayChapter(chapter);
-                    }}
-                    title={isPlayingThis ? 'Pause narration' : 'Listen to audio narration'}
-                    className={`w-9 h-9 rounded-full shrink-0 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-2xs ${
-                      isCurrent
-                        ? 'bg-[#873F55] text-white'
-                        : isLocked
-                        ? 'bg-[#F2EEEA] text-[#948982]'
-                        : 'bg-[#F2EEEA] text-[#292421] hover:bg-[#873F55] hover:text-white'
-                    }`}
-                  >
-                    {isLocked ? (
-                      <Lock className="w-4 h-4" />
-                    ) : isPlayingThis ? (
-                      <Pause className="w-4 h-4 fill-current" />
-                    ) : (
-                      <Play className="w-4 h-4 fill-current ml-0.5" />
-                    )}
-                  </button>
-
+                <div className="flex items-start gap-4 min-w-0">
+                  <span className="font-editorial text-lg text-[#948982] w-6 shrink-0 mt-0.5">
+                    {chapter.number < 10 ? `0${chapter.number}` : chapter.number}
+                  </span>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-[#873F55]">
-                        Chapter {chapter.number}
-                      </span>
+                      <h3 className="font-editorial text-base sm:text-lg text-[#292421] group-hover:text-[#873F55] transition-colors truncate">
+                        {chapter.title}
+                      </h3>
                       {chapter.publishedAt.includes('Today') && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider bg-[#873F55] text-white px-2 py-0.5 rounded-[4px] shadow-xs">
+                        <span className="bg-[#873F55] text-white text-[10px] font-bold px-2 py-0.5 rounded-[4px] uppercase tracking-wider shrink-0">
                           New Today
                         </span>
                       )}
                       {chapter.isPremium && (
-                        <span className="text-[10px] text-[#746B65] bg-[#F2EEEA] px-1.5 py-0.5 rounded-[4px] font-medium">
-                          {user?.isPremium ? 'VIP Unlocked' : 'Premium'}
+                        <span className="bg-[#F2EEEA] text-[#746B65] text-[10px] font-medium px-2 py-0.5 rounded-[4px] shrink-0">
+                          Premium (Ch 11+)
                         </span>
                       )}
                     </div>
-                    <h4 className="font-editorial text-base sm:text-lg text-[#292421] group-hover:text-[#873F55] transition-colors truncate mt-0.5">
-                      {chapter.title}
-                    </h4>
                     {chapter.synopsis && (
-                      <p className="text-xs text-[#746B65] truncate hidden sm:block mt-0.5">
+                      <p className="text-xs text-[#746B65] line-clamp-1 mt-1">
                         {chapter.synopsis}
                       </p>
                     )}
+                    <div className="flex items-center gap-3 text-[11px] text-[#948982] mt-1.5">
+                      <span className="text-[#873F55] font-semibold flex items-center gap-1">
+                        <FileText className="w-3 h-3" />
+                        <span>{chapter.wordCount.toLocaleString()} words</span>
+                      </span>
+                      <span>·</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span>~{chapter.readingTimeMinutes || Math.ceil(chapter.wordCount / 220)} min read</span>
+                      </span>
+                      <span>·</span>
+                      <span>Published {chapter.publishedAt}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 sm:gap-4 text-xs text-[#746B65] shrink-0 tabular-nums">
-                  <span className="hidden sm:inline text-[#948982]">{chapter.publishedAt}</span>
-                  <div className="flex items-center gap-1 font-medium text-[#292421]">
-                    <Clock className="w-3.5 h-3.5 text-[#948982]" />
-                    <span>{formatTime(chapter.durationSeconds)}</span>
-                  </div>
-
-                  {/* Visual Read Text Indicator / Button */}
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white text-[#292421] font-semibold text-xs border border-[#E7E0DA] transition-colors shadow-2xs">
-                    <BookOpen className="w-3.5 h-3.5" />
-                    <span>Read</span>
-                  </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  {isLocked ? (
+                    <div className="flex items-center gap-1 text-xs text-[#948982] bg-[#F2EEEA] px-3 py-1.5 rounded-lg">
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>Locked</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onReadChapter(chapter);
+                      }}
+                      className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white text-[#292421] text-xs font-semibold border border-[#E7E0DA] transition-colors"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Read</span>
+                    </button>
+                  )}
                 </div>
               </div>
             );

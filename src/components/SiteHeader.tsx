@@ -148,7 +148,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
               togglePremiumMembership();
               showToast(
                 user?.isPremium
-                  ? 'Switched to Free Listener Mode'
+                  ? 'Switched to Free Reader Mode'
                   : '⭐ Premium VIP Mode Activated! All chapters unlocked.',
                 'success'
               );
@@ -158,7 +158,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
                 ? 'bg-[#873F55] text-white border-[#873F55] shadow-xs hover:bg-[#6F3044]'
                 : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 shadow-xs'
             }`}
-            title="Click to toggle between Free Listener and Premium VIP test mode"
+            title="Click to toggle between Free Reader and Premium VIP test mode"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-current" />
             <span>{user?.isPremium ? 'VIP Active (Tap: Free)' : 'Tap for VIP Access'}</span>
