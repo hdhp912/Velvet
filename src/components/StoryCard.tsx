@@ -17,9 +17,15 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect, onReadCha
     : 1940;
 
   return (
-    <div
-      onClick={() => onSelect(story.id)}
-      className="group cursor-pointer flex flex-col bg-white border border-[#E7E0DA] rounded-[12px] p-3 transition-all duration-200 hover:border-[#D6CCC4] hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(41,36,33,0.06)]"
+    <a
+      href={`#/story/${story.id}`}
+      onClick={(e) => {
+        if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+          e.preventDefault();
+          onSelect(story.id);
+        }
+      }}
+      className="group cursor-pointer flex flex-col bg-white border border-[#E7E0DA] rounded-[12px] p-3 transition-all duration-200 hover:border-[#D6CCC4] hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(41,36,33,0.06)] block no-underline text-inherit"
     >
       {/* Book Cover Container (Aspect Ratio 3:4, 8px radius) */}
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[8px] bg-[#F2EEEA]">
@@ -49,8 +55,10 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect, onReadCha
         {/* Hover Quick-Read Overlay */}
         <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center p-4">
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               if (onReadChapter && story.chapters[0]) {
                 onReadChapter(story.id, story.chapters[0].id);
               } else {
@@ -114,6 +122,6 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onSelect, onReadCha
           </span>
         </div>
       </div>
-    </div>
+    </a>
   );
 };

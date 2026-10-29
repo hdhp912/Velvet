@@ -225,10 +225,16 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
             const isLocked = chapter.isPremium && !user?.isPremium;
 
             return (
-              <div
+              <a
                 key={chapter.id}
-                onClick={() => onReadChapter(chapter)}
-                className="p-4 sm:px-6 sm:py-4 flex items-center justify-between gap-4 cursor-pointer transition-colors group hover:bg-[#FAF8F5]"
+                href={`#/story/${story.id}/chapter/${chapter.id}`}
+                onClick={(e) => {
+                  if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                    e.preventDefault();
+                    onReadChapter(chapter);
+                  }
+                }}
+                className="p-4 sm:px-6 sm:py-4 flex items-center justify-between gap-4 cursor-pointer transition-colors group hover:bg-[#FAF8F5] block no-underline text-inherit"
                 title="Click to open and read chapter text"
               >
                 <div className="flex items-start gap-4 min-w-0">
@@ -274,19 +280,13 @@ export const StoryDetailView: React.FC<StoryDetailViewProps> = ({
                       <span>Locked</span>
                     </div>
                   ) : (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onReadChapter(chapter);
-                      }}
-                      className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white text-[#292421] text-xs font-semibold border border-[#E7E0DA] transition-colors"
-                    >
+                    <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-[#FAF8F5] group-hover:bg-[#873F55] group-hover:text-white text-[#292421] text-xs font-semibold border border-[#E7E0DA] transition-colors">
                       <BookOpen className="w-3.5 h-3.5" />
                       <span>Read</span>
-                    </button>
+                    </span>
                   )}
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>

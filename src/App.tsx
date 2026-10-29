@@ -24,6 +24,75 @@ function MainApp() {
   const [moodFilter, setMoodFilter] = useState('');
   const [isAdminActive, setIsAdminActive] = useState(false);
 
+  // Synchronize state with URL hash so every story, chapter, and tab has its own URL
+  const parseHash = () => {
+    const rawHash = window.location.hash.replace(/^#\/?/, '');
+    if (!rawHash) {
+      setCurrentTab('home');
+      setSelectedStoryId(null);
+      setSelectedChapterId(null);
+      setIsAdminActive(false);
+      return;
+    }
+
+    if (rawHash === 'admin') {
+      setIsAdminActive(true);
+      return;
+    } else {
+      setIsAdminActive(false);
+    }
+
+    if (rawHash.startsWith('story/')) {
+      const parts = rawHash.split('/');
+      const sId = parts[1];
+      const storyExists = SAMPLE_STORIES.find((s) => s.id === sId);
+      if (storyExists) {
+        setSelectedStoryId(sId);
+        if (parts[2] === 'chapter' && parts[3]) {
+          const chapExists = storyExists.chapters.find((c) => c.id === parts[3]);
+          if (chapExists) {
+            setSelectedChapterId(parts[3]);
+            setCurrentTab('reader');
+            return;
+          }
+        }
+        setSelectedChapterId(null);
+        setCurrentTab('detail');
+        return;
+      }
+    }
+
+    if (rawHash.startsWith('discover')) {
+      setCurrentTab('discover');
+      const queryIdx = rawHash.indexOf('?');
+      if (queryIdx !== -1) {
+        const params = new URLSearchParams(rawHash.slice(queryIdx));
+        const mood = params.get('mood') || params.get('genre');
+        if (mood) setMoodFilter(mood);
+      }
+      return;
+    }
+
+    if (rawHash === 'membership') {
+      setCurrentTab('membership');
+      return;
+    }
+
+    if (rawHash === 'account') {
+      setCurrentTab('account');
+      return;
+    }
+
+    setCurrentTab('home');
+  };
+
+  useEffect(() => {
+    parseHash();
+    const handleHashChange = () => parseHash();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   // Run automated daily chapter release engine check on app load
   useEffect(() => {
     runDailyAutomationCheck();
@@ -35,38 +104,28 @@ function MainApp() {
   }, [currentTab, selectedStoryId, selectedChapterId, isAdminActive]);
 
   const handleSelectStory = (id: string) => {
-    setSelectedStoryId(id);
-    setSelectedChapterId(null);
-    setCurrentTab('detail');
+    window.location.hash = `#/story/${id}`;
   };
 
   const handleReadChapter = (storyId: string, chapterId: string) => {
-    setSelectedStoryId(storyId);
-    setSelectedChapterId(chapterId);
-    setCurrentTab('reader');
+    window.location.hash = `#/story/${storyId}/chapter/${chapterId}`;
   };
 
   const handleNavigate = (tab: string, param?: string) => {
-    if (tab === 'romance') {
-      setCurrentTab('discover');
-      setMoodFilter('');
-    } else if (tab === 'new-releases') {
-      setCurrentTab('discover');
-      setMoodFilter('');
-    } else if (tab === 'completed') {
-      setCurrentTab('discover');
-      setMoodFilter('');
-    } else if (tab === 'discover') {
-      setCurrentTab('discover');
-      if (param) setMoodFilter(param);
+    if (tab === 'home') {
+      window.location.hash = '#/';
+    } else if (tab === 'romance' || tab === 'new-releases' || tab === 'completed' || tab === 'discover') {
+      if (param) {
+        window.location.hash = `#/discover?genre=${encodeURIComponent(param)}`;
+      } else {
+        window.location.hash = '#/discover';
+      }
+    } else if (tab === 'membership') {
+      window.location.hash = '#/membership';
+    } else if (tab === 'account') {
+      window.location.hash = '#/account';
     } else {
-      setCurrentTab(tab as any);
-      if (param) setMoodFilter(param);
-    }
-
-    if (tab !== 'detail' && tab !== 'reader') {
-      setSelectedStoryId(null);
-      setSelectedChapterId(null);
+      window.location.hash = `#/${tab}`;
     }
   };
 
@@ -77,7 +136,7 @@ function MainApp() {
   if (isAdminActive) {
     return (
       <div className="min-h-screen bg-[#FAF8F5]">
-        <AdminDashboard onExit={() => setIsAdminActive(false)} />
+        <AdminDashboard onExit={() => { window.location.hash = '#/'; }} />
         <AuthModal />
       </div>
     );
